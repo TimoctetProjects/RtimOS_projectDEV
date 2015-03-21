@@ -118,6 +118,7 @@ initTimOS()
 	__ISB(); 									// Flush processor cache
 
 	// Launch first task function normally
+	// TODO: Load context task instead of calling it
 	((pFunction)(((Stack_Frame_HW_s *)(CurrentTaskRunning->PSP_value + sizeof(Stack_Frame_SW_s)))->pc))();
 
 	// Sould not reach here

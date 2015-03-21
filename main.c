@@ -44,8 +44,6 @@ Task_s* test_Task3;
 int
 main()
 {
-	int test = 0;
-	test--;
 	SystemInit();
 	SystemCoreClockUpdate();
 
