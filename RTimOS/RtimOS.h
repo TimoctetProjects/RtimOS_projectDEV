@@ -43,10 +43,14 @@
 
 
 /** @brief Linked list */
-#define VALIDATION_LIST				1 | VALDIATION
+#define VALIDATION_LIST				0 | VALDIATION
 #define VALIDATION_LIST_LINEAIRE	0 | VALIDATION_LIST
 #define VALIDATION_LIST_CIRULAIR	0 | VALIDATION_LIST
 
+
+
+#define IS_VALIDATION	\
+	VALIDATION_LIST_CIRULAIR | VALIDATION_LIST_LINEAIRE
 
 #endif /** RTIMOS_H */
 /***********************************END OF FILE*******************************/

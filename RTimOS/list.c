@@ -156,38 +156,38 @@ _list_del(	list_head_s* prev,
  */
 #if VALIDATION_LIST_LINEAIRE
 
-unsigned char
-VALIDATION_list_lineaire()
-{
-	list_head_s list1, list2, list3, list4, list5, list0;
+	unsigned char
+	VALIDATION_list_lineaire()
+	{
+		list_head_s list1, list2, list3, list4, list5, list0;
 
-	LISTLINEAR_HEAD_INIT(&list1);
-	LISTLINEAR_HEAD_INIT(&list2);
-	LISTLINEAR_HEAD_INIT(&list3);
-	LISTLINEAR_HEAD_INIT(&list4);
-	LISTLINEAR_HEAD_INIT(&list0);
-	LISTLINEAR_HEAD_INIT(&list5);
+		LISTLINEAR_HEAD_INIT(&list1);
+		LISTLINEAR_HEAD_INIT(&list2);
+		LISTLINEAR_HEAD_INIT(&list3);
+		LISTLINEAR_HEAD_INIT(&list4);
+		LISTLINEAR_HEAD_INIT(&list0);
+		LISTLINEAR_HEAD_INIT(&list5);
 
-	list_add			(&list3, &list1);
-	list_add_tail		(&list2, &list3);
-	list_add			(&list4, &list3);
-	ListLinear_add_start(&list0, &list4);
-	ListLinear_add_end	(&list5, &list0);
+		list_add			(&list3, &list1);
+		list_add_tail		(&list2, &list3);
+		list_add			(&list4, &list3);
+		ListLinear_add_start(&list0, &list4);
+		ListLinear_add_end	(&list5, &list0);
 
-	return(		list0.prev == NULL
-			&&	list0.next == &list1
-			&&	list1.prev == &list0
-			&&	list1.next == &list2
-			&&	list2.prev == &list1
-			&&	list2.next == &list3
+		return(		list0.prev == NULL
+				&&	list0.next == &list1
+				&&	list1.prev == &list0
+				&&	list1.next == &list2
+				&&	list2.prev == &list1
+				&&	list2.next == &list3
 
-			&&	list3.next == &list4
-			&&	list3.prev == &list2
-			&&	list4.next == &list5
-			&&	list4.prev == &list3
-			&&	list5.next == NULL
-			&&	list5.prev == &list4	);
-}
+				&&	list3.next == &list4
+				&&	list3.prev == &list2
+				&&	list4.next == &list5
+				&&	list4.prev == &list3
+				&&	list5.next == NULL
+				&&	list5.prev == &list4	);
+	}
 
 #endif /** VALIDATION_LIST_LINEAIRE */
 

@@ -465,18 +465,10 @@ Discarded input sections
  .text          0x00000000        0x0 ..\obj\list.o
  .data          0x00000000        0x0 ..\obj\list.o
  .bss           0x00000000        0x0 ..\obj\list.o
- .text.list_add_tail
-                0x00000000       0x20 ..\obj\list.o
  .text.list_del
                 0x00000000       0x20 ..\obj\list.o
- .text.ListLinear_add_end
-                0x00000000       0x34 ..\obj\list.o
- .text.ListLinear_add_start
-                0x00000000       0x34 ..\obj\list.o
  .text._list_del
                 0x00000000       0x20 ..\obj\list.o
- .text.VALIDATION_list_lineaire
-                0x00000000      0x120 ..\obj\list.o
  .text          0x00000000        0x0 ..\obj\system_stm32f4xx.o
  .bss           0x00000000        0x0 ..\obj\system_stm32f4xx.o
  .text          0x00000000        0x0 ..\obj\syscalls.o
@@ -751,7 +743,7 @@ Linker script and memory map
 
                 0x20020000                _eram = 0x20020000
 
-.text           0x08000000     0x1444
+.text           0x08000000     0x15ec
  *(.isr_vector .isr_vector.*)
  .isr_vector    0x08000000      0x188 ..\obj\startup_stm32f4xx.o
                 0x08000000                g_pfnVectors
@@ -764,22 +756,21 @@ Linker script and memory map
  .text.SysTick_Config
                 0x0800021c       0x64 ..\obj\task.o
  .text.initTimOS
-                0x08000280       0x94 ..\obj\task.o
+                0x08000280       0x98 ..\obj\task.o
                 0x08000280                initTimOS
  .text.Task_Create
-                0x08000314       0xc4 ..\obj\task.o
-                0x08000314                Task_Create
+                0x08000318       0xc4 ..\obj\task.o
+                0x08000318                Task_Create
  .text.Task_StackInit
-                0x080003d8       0xa4 ..\obj\task.o
+                0x080003dc       0xa4 ..\obj\task.o
  .text.Task_GetNextTask
-                0x0800047c       0x54 ..\obj\task.o
+                0x08000480       0x54 ..\obj\task.o
  .text.getSystickCount
-                0x080004d0       0x18 ..\obj\task.o
-                0x080004d0                getSystickCount
+                0x080004d4       0x18 ..\obj\task.o
+                0x080004d4                getSystickCount
  .text.SysTick_Handler
-                0x080004e8       0x24 ..\obj\task.o
-                0x080004e8                SysTick_Handler
- *fill*         0x0800050c        0x4 00
+                0x080004ec       0x24 ..\obj\task.o
+                0x080004ec                SysTick_Handler
  .text.PendSV_Handler
                 0x08000510       0x40 ..\obj\task.o
                 0x08000510                PendSV_Handler
@@ -894,73 +885,85 @@ Linker script and memory map
  .text.list_add
                 0x080007a0       0x20 ..\obj\list.o
                 0x080007a0                list_add
+ .text.list_add_tail
+                0x080007c0       0x20 ..\obj\list.o
+                0x080007c0                list_add_tail
+ .text.ListLinear_add_end
+                0x080007e0       0x34 ..\obj\list.o
+                0x080007e0                ListLinear_add_end
+ .text.ListLinear_add_start
+                0x08000814       0x34 ..\obj\list.o
+                0x08000814                ListLinear_add_start
  .text._list_add
-                0x080007c0       0x30 ..\obj\list.o
+                0x08000848       0x30 ..\obj\list.o
+ .text.VALIDATION_list_lineaire
+                0x08000878      0x120 ..\obj\list.o
+                0x08000878                VALIDATION_list_lineaire
  .text.SystemInit
-                0x080007f0       0x94 ..\obj\system_stm32f4xx.o
-                0x080007f0                SystemInit
+                0x08000998       0x94 ..\obj\system_stm32f4xx.o
+                0x08000998                SystemInit
  .text.SystemCoreClockUpdate
-                0x08000884      0x170 ..\obj\system_stm32f4xx.o
-                0x08000884                SystemCoreClockUpdate
+                0x08000a2c      0x170 ..\obj\system_stm32f4xx.o
+                0x08000a2c                SystemCoreClockUpdate
  .text.SetSysClock
-                0x080009f4      0x188 ..\obj\system_stm32f4xx.o
- .text._sbrk    0x08000b7c       0x5c ..\obj\syscalls.o
-                0x08000b7c                _sbrk
- .text.abort    0x08000bd8        0x8 ..\obj\syscalls.o
-                0x08000bd8                abort
+                0x08000b9c      0x188 ..\obj\system_stm32f4xx.o
+ .text._sbrk    0x08000d24       0x5c ..\obj\syscalls.o
+                0x08000d24                _sbrk
+ .text.abort    0x08000d80        0x8 ..\obj\syscalls.o
+                0x08000d80                abort
  .text.__libc_init_array
-                0x08000be0       0x90 ..\obj\startup_constructor.o
-                0x08000be0                __libc_init_array
- .text.malloc   0x08000c70       0x10 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-malloc.o)
-                0x08000c70                malloc
- .text.free     0x08000c80       0x10 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-malloc.o)
-                0x08000c80                free
+                0x08000d88       0x90 ..\obj\startup_constructor.o
+                0x08000d88                __libc_init_array
+ .text.malloc   0x08000e18       0x10 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-malloc.o)
+                0x08000e18                malloc
+ .text.free     0x08000e28       0x10 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-malloc.o)
+                0x08000e28                free
  .text._malloc_r
-                0x08000c90      0x55c c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-mallocr.o)
-                0x08000c90                _malloc_r
+                0x08000e38      0x55c c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-mallocr.o)
+                0x08000e38                _malloc_r
  .text.__malloc_lock
-                0x080011ec        0x4 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-mlock.o)
-                0x080011ec                __malloc_lock
+                0x08001394        0x4 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-mlock.o)
+                0x08001394                __malloc_lock
  .text.__malloc_unlock
-                0x080011f0        0x4 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-mlock.o)
-                0x080011f0                __malloc_unlock
- .text._sbrk_r  0x080011f4       0x24 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-sbrkr.o)
-                0x080011f4                _sbrk_r
+                0x08001398        0x4 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-mlock.o)
+                0x08001398                __malloc_unlock
+ .text._sbrk_r  0x0800139c       0x24 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-sbrkr.o)
+                0x0800139c                _sbrk_r
  .text._malloc_trim_r
-                0x08001218       0x98 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-freer.o)
-                0x08001218                _malloc_trim_r
- .text._free_r  0x080012b0      0x194 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-freer.o)
-                0x080012b0                _free_r
+                0x080013c0       0x98 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-freer.o)
+                0x080013c0                _malloc_trim_r
+ .text._free_r  0x08001458      0x194 c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7e-m\libg.a(lib_a-freer.o)
+                0x08001458                _free_r
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.rodata .rodata* .gnu.linkonce.r.*)
 
-.vfp11_veneer   0x08001444        0x0
+.vfp11_veneer   0x080015ec        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08001444        0x0
+.v4_bx          0x080015ec        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
-.iplt           0x08001444        0x0
+.iplt           0x080015ec        0x0
  .iplt          0x00000000        0x0 ..\obj\stm32f4xx_syscfg.o
 
-.rel.dyn        0x08001444        0x0
+.rel.dyn        0x080015ec        0x0
  .rel.iplt      0x00000000        0x0 ..\obj\stm32f4xx_syscfg.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x08001444                __exidx_start = .
+                0x080015ec                __exidx_start = .
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x08001444                __exidx_end = .
-                0x08001444                . = ALIGN (0x4)
-                0x08001444                _etext = .
-                0x08001444                _sidata = .
+                0x080015ec                __exidx_end = .
+                0x080015ec                . = ALIGN (0x4)
+                0x080015ec                _etext = .
+                0x080015ec                _sidata = .
 
-.data           0x20000000      0x854 load address 0x08001444
+.data           0x20000000      0x854 load address 0x080015ec
                 0x20000000                _sdata = .
  *(.data .data.*)
  .data          0x20000000      0x430 ..\obj\printf.o
@@ -981,10 +984,10 @@ Linker script and memory map
                 0x20000854                . = ALIGN (0x4)
                 0x20000854                _edata = .
 
-.igot.plt       0x20000854        0x0 load address 0x08001c98
+.igot.plt       0x20000854        0x0 load address 0x08001e40
  .igot.plt      0x00000000        0x0 ..\obj\stm32f4xx_syscfg.o
 
-.bss            0x20000854       0x5c load address 0x08001c98
+.bss            0x20000854       0x5c load address 0x08001e40
                 0x20000854                _sbss = .
  *(.bss .bss.*)
  .bss           0x20000854       0x10 ..\obj\task.o
@@ -1012,7 +1015,7 @@ Linker script and memory map
                 0x200008b0                . = ALIGN (0x4)
                 0x200008b0                _ebss = .
 
-.co_stack       0x200008b0      0x800 load address 0x08001cf4
+.co_stack       0x200008b0      0x800 load address 0x08001e9c
                 0x200008b0                . = ALIGN (0x8)
  *(.co_stack .co_stack.*)
  .co_stack      0x200008b0      0x800 ..\obj\startup_stm32f4xx.o
@@ -1045,16 +1048,16 @@ LOAD c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm
 END GROUP
 OUTPUT(Dev_DrvPWM.elf elf32-littlearm)
 
-.debug_info     0x00000000     0x2fcb
+.debug_info     0x00000000     0x2fcc
  .debug_info    0x00000000      0x1ac ..\obj\mem.o
- .debug_info    0x000001ac      0xa6c ..\obj\task.o
- .debug_info    0x00000c18      0x1a3 ..\obj\startup_stm32f4xx.o
- .debug_info    0x00000dbb      0x4f2 ..\obj\main.o
- .debug_info    0x000012ad      0xf65 ..\obj\printf.o
- .debug_info    0x00002212      0x281 ..\obj\list.o
- .debug_info    0x00002493      0x5f5 ..\obj\system_stm32f4xx.o
- .debug_info    0x00002a88      0x443 ..\obj\syscalls.o
- .debug_info    0x00002ecb      0x100 ..\obj\startup_constructor.o
+ .debug_info    0x000001ac      0xa6d ..\obj\task.o
+ .debug_info    0x00000c19      0x1a3 ..\obj\startup_stm32f4xx.o
+ .debug_info    0x00000dbc      0x4f2 ..\obj\main.o
+ .debug_info    0x000012ae      0xf65 ..\obj\printf.o
+ .debug_info    0x00002213      0x281 ..\obj\list.o
+ .debug_info    0x00002494      0x5f5 ..\obj\system_stm32f4xx.o
+ .debug_info    0x00002a89      0x443 ..\obj\syscalls.o
+ .debug_info    0x00002ecc      0x100 ..\obj\startup_constructor.o
 
 .debug_abbrev   0x00000000      0xb96
  .debug_abbrev  0x00000000       0xe6 ..\obj\mem.o
@@ -1109,16 +1112,16 @@ OUTPUT(Dev_DrvPWM.elf elf32-littlearm)
  .debug_ranges  0x000001c8       0x50 ..\obj\syscalls.o
  .debug_ranges  0x00000218       0x10 ..\obj\startup_constructor.o
 
-.debug_line     0x00000000     0x106a
+.debug_line     0x00000000     0x106b
  .debug_line    0x00000000       0xbb ..\obj\mem.o
- .debug_line    0x000000bb      0x2ab ..\obj\task.o
- .debug_line    0x00000366      0x16e ..\obj\startup_stm32f4xx.o
- .debug_line    0x000004d4      0x204 ..\obj\main.o
- .debug_line    0x000006d8      0x3f3 ..\obj\printf.o
- .debug_line    0x00000acb      0x12d ..\obj\list.o
- .debug_line    0x00000bf8      0x1ae ..\obj\system_stm32f4xx.o
- .debug_line    0x00000da6      0x19b ..\obj\syscalls.o
- .debug_line    0x00000f41      0x129 ..\obj\startup_constructor.o
+ .debug_line    0x000000bb      0x2ac ..\obj\task.o
+ .debug_line    0x00000367      0x16e ..\obj\startup_stm32f4xx.o
+ .debug_line    0x000004d5      0x204 ..\obj\main.o
+ .debug_line    0x000006d9      0x3f3 ..\obj\printf.o
+ .debug_line    0x00000acc      0x12d ..\obj\list.o
+ .debug_line    0x00000bf9      0x1ae ..\obj\system_stm32f4xx.o
+ .debug_line    0x00000da7      0x19b ..\obj\syscalls.o
+ .debug_line    0x00000f42      0x129 ..\obj\startup_constructor.o
 
 .debug_str      0x00000000     0x141e
  .debug_str     0x00000000      0x103 ..\obj\mem.o

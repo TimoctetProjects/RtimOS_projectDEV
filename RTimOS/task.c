@@ -103,6 +103,15 @@ typedef void (*pFunction)(void);
 unsigned char
 initTimOS()
 {
+	#if IS_VALIDATION
+
+
+		#if VALIDATION_LIST_LINEAIRE
+			VALIDATION_list_lineaire();
+		#endif /** VALIDATION_LIST_LINEAIRE */
+
+	#endif /** IS_VALIDATION */
+
 	// Return FAIL if nos task can be loaded
 	if(!CurrentTaskRunning->list.next)
 		return FAIL;
