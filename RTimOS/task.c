@@ -153,7 +153,7 @@ Task_Create(	unsigned long 		StackSize,
 		return NULL;
 	}
 
-	LIST_HEAD_INIT(pNewTask);
+	LISTCIRCULAR_HEAD_INIT(pNewTask);
 
 	//----------------- Prepare struct fields in task's handle
 	pNewTask->StackSize = StackSize;
@@ -163,7 +163,7 @@ Task_Create(	unsigned long 		StackSize,
 		CurrentTaskRunning = pNewTask;
 		FirstTask++;
 	} else
-		list_add(pNewTask, CurrentTaskRunning);
+		List_add(pNewTask, CurrentTaskRunning);
 
 	return pNewTask;
 }

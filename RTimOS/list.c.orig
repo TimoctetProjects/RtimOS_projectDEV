@@ -4,7 +4,11 @@
   * @author    duclos timothe
   * @version   V0.1
   * @date      08/03/2015
+<<<<<<< HEAD
   * @brief     This software handles double linked list (linear & cirular)
+=======
+  * @brief     This file handle double linked list in circular/linear way
+>>>>>>> ee90d8526b2fee1e5e612b465722062fae951606
   ******************************************************************************
 */
 /**
@@ -34,6 +38,23 @@ static inline void _List_del(list_head_s* prev,list_head_s* next);
  *
  */
 /**
+<<<<<<< HEAD
+=======
+  * @brief  Insert a new entry before the specified head
+  * @param  NewEntry		Pointer to the new entry to add
+  * 		head			Pointer to the entry before which we'll add the new one
+  */
+inline void
+List_add_tail(	void* pNewEntry,
+				void* pHead)
+{
+	_List_add(	((list_head_s*)pNewEntry),
+				((list_head_s*)pHead)->prev,
+				((list_head_s*)pHead)		);
+}
+
+/**
+>>>>>>> ee90d8526b2fee1e5e612b465722062fae951606
   * @brief  Insert a new entry after the specified head
   * @param  _NewEntry		Pointer to the new entry to add
   * 		_head			Pointer to the entry after which we'll add the new one
@@ -66,6 +87,26 @@ list_add_tail(	void* pNewEntry,
   * @param  _DoomedEntry	The entry to delete from the list
   */
 inline void
+List_del(void* pDoomedEntry)
+{
+	_List_del(	((list_head_s*)pDoomedEntry)->prev,
+				((list_head_s*)pDoomedEntry)->next	);
+}
+
+
+
+
+/**
+  * @brief  Add an entry at the end of a linear list
+  * @param  NewEntry		The entry to add to the list
+  * 		pHead			An entry of the list
+  *
+  * @note	DO NOT CALL THIS METHOD WITH A CIRCULAR LIST
+  * 		OTHERWISE IT WILL NEVER END !
+  * 		THINK BEFORE YOU CALL !
+  */
+inline void
+<<<<<<< HEAD
 list_del(void* pDoomedEntry)
 {
 	_list_del(	((list_head_s*)pDoomedEntry)->prev,
@@ -84,6 +125,11 @@ void
 ListLinear_add_end(	void* pNewEntry,
 					void* _pHead)
 {
+=======
+ListLinear_add_end(	void* pNewEntry,
+					void* _pHead)
+{
+>>>>>>> ee90d8526b2fee1e5e612b465722062fae951606
 	// Search for list end
 	list_head_s* pLastEntry = (list_head_s *)_pHead;
 	while( pLastEntry->next ) {
@@ -91,6 +137,7 @@ ListLinear_add_end(	void* pNewEntry,
 	}
 
 	// Add the entry
+<<<<<<< HEAD
 	_list_add( 	((list_head_s*)pNewEntry),
 				((list_head_s*)pLastEntry),
 				((list_head_s*)pLastEntry)->next );
@@ -107,6 +154,28 @@ ListLinear_add_end(	void* pNewEntry,
 void
 ListLinear_add_start( 	void* const pNewEntry,
 						void* const _pHead	)
+=======
+	_List_add_end(	((list_head_s*)pNewEntry),
+					((list_head_s*)pLastEntry)	);
+	// pLastEntry->next = pNewEntry
+	// pNewEntry->next = NULL
+	// pNewEntry->prev = pLastEntry
+	// pLastEntry->prev conserve ?
+}
+
+/**
+  * @brief  Add an entry after the start of a linear list
+  * @param  NewEntry		The entry to add to the list
+  * 		pHead			An entry of the list
+  *
+  * @note	DO NOT CALL THIS METHOD WITH A CIRCULAR LIST
+  * 		OTHERWISE IT WILL NEVER END !
+  * 		THINK BEFORE YOU CALL !
+  */
+inline void
+ListLinear_add_start(	void* pNewEntry,
+						void* _pHead)
+>>>>>>> ee90d8526b2fee1e5e612b465722062fae951606
 {
 	// Search for list start
 	list_head_s* pFirstEntry = (list_head_s *)_pHead;
@@ -115,20 +184,18 @@ ListLinear_add_start( 	void* const pNewEntry,
 	}
 
 	// Add the entry
+<<<<<<< HEAD
 	_list_add( 	((list_head_s*)pNewEntry),
 				((list_head_s*)pFirstEntry)->prev,
 				((list_head_s*)pFirstEntry)	);
-	while( pFirstEntry->prev ) {
-		pFirstEntry = ((list_head_s *)pFirstEntry)->prev;
-	}
-
-	// Add the entry
+=======
 	_List_add_start(	((list_head_s*)pNewEntry),
 						((list_head_s*)pFirstEntry)	);
 	// pNewEntry->next = pFirstEntry->next
 	// pFirstEntry->next = pNewEntry
 	// pNewEntry->prev = pFirstEntry
 	// pFirstEntry->prev conserve ?
+>>>>>>> ee90d8526b2fee1e5e612b465722062fae951606
 }
 
 /**
@@ -164,6 +231,7 @@ _List_del(	list_head_s* prev,
 
 
 
+<<<<<<< HEAD
 
 /**
    ******************************************************************************
@@ -207,4 +275,6 @@ VALIDATION_list_lineaire()
 
 #endif /** VALIDATION_LIST_LINEAIRE */
 
+=======
+>>>>>>> ee90d8526b2fee1e5e612b465722062fae951606
 /***********************************END OF FILE********************************/

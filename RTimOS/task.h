@@ -51,8 +51,8 @@ typedef struct _Task_s{
 	list_head_s	list;
 
 	//----------- Stack of task
-	unsigned int* 		pStack;
-	unsigned int 		StackSize;
+	unsigned long* 		pStack;
+	unsigned long 		StackSize;
 
 	//----------- State of task
 	TaskState_s			State;
@@ -60,7 +60,8 @@ typedef struct _Task_s{
 	//----------- Process Stack pointer adress value
 	unsigned int		PSP_value;
 
-	//---------- Timer handle
+	//---------- Timer Task
+	unsigned long		ResartValue_ticks;
 
 }Task_s;
 
@@ -74,7 +75,7 @@ unsigned char 	initTimOS	();
 Task_s* 		Task_Create	(	unsigned long StackSize,
 								unsigned long _ptr_TaskFunction,
 								void* _ptr_Param	);
-
+void Task_suspend(unsigned long TickToWait_ticks);
 
 
 
