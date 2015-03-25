@@ -36,7 +36,8 @@ static inline void _list_del(list_head_s* prev,list_head_s* next);
   */
 inline void
 list_add(	void* NewEntry,
-			void* head)
+			void* head,
+			unsigned long offset)
 {
 	_list_add(	((list_head_s*)NewEntry),
 				((list_head_s*)head),
@@ -50,7 +51,8 @@ list_add(	void* NewEntry,
   */
 inline void
 list_add_tail(	void* pNewEntry,
-				void* pHead)
+				void* pHead,
+				unsigned long offset)
 {
 	_list_add(	((list_head_s*)pNewEntry),
 				((list_head_s*)pHead)->prev,
@@ -62,7 +64,8 @@ list_add_tail(	void* pNewEntry,
   * @param  _DoomedEntry		The entry to delete from the list
   */
 inline void
-list_del(void* pDoomedEntry)
+list_del(	void* pDoomedEntry,
+		 	unsigned long offset)
 {
 	_list_del(	((list_head_s*)pDoomedEntry)->prev,
 				((list_head_s*)pDoomedEntry)->next	);
@@ -78,7 +81,8 @@ list_del(void* pDoomedEntry)
 */
 void
 ListLinear_add_end(	void* pNewEntry,
-					void* _pHead)
+					void* _pHead,
+					unsigned long offset)
 {
 	// Search for list end
 	list_head_s* pLastEntry = (list_head_s *)_pHead;
@@ -102,7 +106,8 @@ ListLinear_add_end(	void* pNewEntry,
 */
 void
 ListLinear_add_start( 	void* const pNewEntry,
-						void* const _pHead	)
+						void* const _pHead,
+						unsigned long offset	)
 {
 	// Search for list start
 	list_head_s* pFirstEntry = (list_head_s *)_pHead;
@@ -168,11 +173,11 @@ _list_del(	list_head_s* prev,
 		LISTLINEAR_HEAD_INIT(&list0);
 		LISTLINEAR_HEAD_INIT(&list5);
 
-		list_add			(&list3, &list1);
-		list_add_tail		(&list2, &list3);
-		list_add			(&list4, &list3);
-		ListLinear_add_start(&list0, &list4);
-		ListLinear_add_end	(&list5, &list0);
+		list_add			(&list3, &list1, 0);
+		list_add_tail		(&list2, &list3, 0);
+		list_add			(&list4, &list3, 0);
+		ListLinear_add_start(&list0, &list4, 0);
+		ListLinear_add_end	(&list5, &list0, 0);
 
 		return(		list0.prev == NULL
 				&&	list0.next == &list1

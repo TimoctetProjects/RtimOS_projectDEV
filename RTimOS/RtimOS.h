@@ -34,6 +34,12 @@
 #endif /** NULL */
 
 /**
+* @brief Read the offset in byte of a struct's field
+*/
+#define __GetOffset_byte(type, field)	\
+	((unsigned long)&(((type*)0)->field))
+
+/**
    ******************************************************************************
  * This section handles validations
  *

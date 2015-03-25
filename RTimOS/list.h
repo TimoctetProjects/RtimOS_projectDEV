@@ -54,14 +54,14 @@ typedef struct _list_head_s {
  * Exported function prototype
  *
  */
-/** For both Double circular & linear linked lists */
-inline void list_add_tail	(void* pNewEntry, void* pHead);
-inline void list_add		(void* pNewEntry, void* pHead);
-inline void list_del		(void* pDoomedEntry);
+/** For both circular & linear linked lists */
+inline void list_add_tail	(void* pNewEntry, void* pHead, 	unsigned long offset);
+inline void list_add		(void* pNewEntry, void* pHead,	unsigned long offset);
+inline void list_del		(void* pDoomedEntry, 			unsigned long offset);
 
 /** For linear list */
-void ListLinear_add_end		(void* pNewEntry, void* _pHead);
-void ListLinear_add_start	(void* const pNewEntry, void* const _pHead);
+void ListLinear_add_end		(void* pNewEntry, void* _pHead, unsigned long offset);
+void ListLinear_add_start	(void* const pNewEntry, void* const _pHead, unsigned long offset);
 
 
 /** Validation */

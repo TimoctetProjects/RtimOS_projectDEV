@@ -27,8 +27,11 @@
 #define OFFSETSTACK_XPCR				4
 #define OFFSETSTACK_TASKFUNCTION		4
 
-#define __GetOffset_byte(type, field)	((unsigned long)&(((type*)0)->field))
+#define	TASK_LISTHEAD_OFFSET_byte	__GetOffset_byte(Task_s, list)
 
+#define _list_add_tail(a, b)	list_add_tail(a, b, TASK_LISTHEAD_OFFSET_byte)
+#define _list_add(a, b)			list_add(a, b, TASK_LISTHEAD_OFFSET_byte)
+#define _list_del(a, b)			list_del(a, TASK_LISTHEAD_OFFSET_byte)
 
 /**
  ******************************************************************************
@@ -172,7 +175,7 @@ Task_Create(	unsigned long 		StackSize,
 		CurrentTaskRunning = pNewTask;
 		FirstTask++;
 	} else
-		list_add(pNewTask, CurrentTaskRunning);
+		_list_add(pNewTask, CurrentTaskRunning);
 
 	return pNewTask;
 }
