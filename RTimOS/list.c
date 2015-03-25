@@ -7,11 +7,7 @@
   * @brief     This software handles double linked list (linear & cirular)
   ******************************************************************************
 */
-/**
- * TODO: Gestion des const dans les prototypes
- * TODO: Test liste linear avec methodes actuel
- * TODO: Test methodes linear specifiques avec ajout a la fin et au depart
- */
+
 /**
    ******************************************************************************
  * Include
@@ -24,8 +20,8 @@
  * Private function prototype
  *
  */
-static inline void _List_add(list_head_s* new, list_head_s* prev, list_head_s* next);
-static inline void _List_del(list_head_s* prev,list_head_s* next);
+static inline void _list_add(list_head_s* new, list_head_s* prev, list_head_s* next);
+static inline void _list_del(list_head_s* prev,list_head_s* next);
 
 
 /**
@@ -39,12 +35,12 @@ static inline void _List_del(list_head_s* prev,list_head_s* next);
   * 		_head			Pointer to the entry after which we'll add the new one
   */
 inline void
-List_add(	void* pNewEntry,
-			void* pHead)
+list_add(	void* NewEntry,
+			void* head)
 {
-	_List_add(	((list_head_s*)pNewEntry),
-				((list_head_s*)pHead),
-				((list_head_s*)pHead)->next	);
+	_list_add(	((list_head_s*)NewEntry),
+				((list_head_s*)head),
+				((list_head_s*)head)->next	);
 }
 
 /**
@@ -63,7 +59,7 @@ list_add_tail(	void* pNewEntry,
 
 /**
   * @brief  Delete an entry after the specified head
-  * @param  _DoomedEntry	The entry to delete from the list
+  * @param  _DoomedEntry		The entry to delete from the list
   */
 inline void
 list_del(void* pDoomedEntry)
@@ -118,17 +114,6 @@ ListLinear_add_start( 	void* const pNewEntry,
 	_list_add( 	((list_head_s*)pNewEntry),
 				((list_head_s*)pFirstEntry)->prev,
 				((list_head_s*)pFirstEntry)	);
-	while( pFirstEntry->prev ) {
-		pFirstEntry = ((list_head_s *)pFirstEntry)->prev;
-	}
-
-	// Add the entry
-	_List_add_start(	((list_head_s*)pNewEntry),
-						((list_head_s*)pFirstEntry)	);
-	// pNewEntry->next = pFirstEntry->next
-	// pFirstEntry->next = pNewEntry
-	// pNewEntry->prev = pFirstEntry
-	// pFirstEntry->prev conserve ?
 }
 
 /**
@@ -137,25 +122,24 @@ ListLinear_add_start( 	void* const pNewEntry,
  *
  */
 /**
- * @brief add an entry in a circular/linear list between two specified others
+ * @brief add an entry between two others
  */
 static inline void
-_List_add(	list_head_s* new,
+_list_add(	list_head_s* new,
 			list_head_s* prev,
 			list_head_s* next)
 {
 	 next->prev = new;
-	 new->next  = next;
-	 new->prev  = prev;
+	 new->next = next;
+	 new->prev = prev;
 	 prev->next = new;
 }
 
 /**
- * @brief 	Delete a list entry in a circular/linear list
- * 			by making its prev/next point to each other
+ * @brief Delete a list entry by making its prev/next point to each other
  */
 static inline void
-_List_del(	list_head_s* prev,
+_list_del(	list_head_s* prev,
 			list_head_s* next)
 {
 	next->prev = prev;

@@ -27,16 +27,6 @@
 	* @brief 	Initialize the list_head struct of a object in a circular way
 	* @param 	lIST 	Object's adress with the list head to initialize
 */
-	#undef 	NULL
-#endif /** NULL */
-#ifndef NULL
-	#define NULL		((void *)0)
-#endif /** NULL */
-
-/**
-  * @brief  Initialize the list_head struct of a object in a circular way
-  * @param  lIST	Object's adress with the list head to initialize
-  */
 #define LISTCIRCULAR_HEAD_INIT(lIST) \
 	*((list_head_s*)(lIST)) = (list_head_s) { (list_head_s*)(lIST), (list_head_s*)(lIST) }
 
@@ -50,20 +40,10 @@
 
 
 /**
-  * @brief  Initialize the list_head struct of a object in a linear way
-  * @param  lIST	Object's adress with the list head to initialize
-  */
-#define LISTLINEAR_HEAD_INIT(lIST) \
-	*((list_head_s*)(lIST)) = (list_head_s) { NULL, NULL }
-
-/**
  ******************************************************************************
  * Exported type definition
  *
  */
-/**
-  * @brief  Structure of a list head, to put first in a object's struct using it
-  */
 typedef struct _list_head_s {
 	struct _list_head_s* next;
 	struct _list_head_s* prev;
@@ -83,8 +63,6 @@ inline void list_del		(void* pDoomedEntry);
 void ListLinear_add_end		(void* pNewEntry, void* _pHead);
 void ListLinear_add_start	(void* const pNewEntry, void* const _pHead);
 
-inline void ListLinear_add_end	(void* pNewEntry, void* pHead);
-inline void ListLinear_add_start(void* pNewEntry, void* pHead);
 
 #endif /** LIST_H */
 

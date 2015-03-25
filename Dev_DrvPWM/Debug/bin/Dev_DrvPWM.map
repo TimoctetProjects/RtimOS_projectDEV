@@ -1045,16 +1045,16 @@ LOAD c:/program files (x86)/gnu tools arm embedded/4.7 2013q2/bin/../lib/gcc/arm
 END GROUP
 OUTPUT(Dev_DrvPWM.elf elf32-littlearm)
 
-.debug_info     0x00000000     0x2faf
+.debug_info     0x00000000     0x2fcb
  .debug_info    0x00000000      0x1ac ..\obj\mem.o
- .debug_info    0x000001ac      0xa5e ..\obj\task.o
- .debug_info    0x00000c0a      0x1a3 ..\obj\startup_stm32f4xx.o
- .debug_info    0x00000dad      0x4e4 ..\obj\main.o
- .debug_info    0x00001291      0xf65 ..\obj\printf.o
- .debug_info    0x000021f6      0x281 ..\obj\list.o
- .debug_info    0x00002477      0x5f5 ..\obj\system_stm32f4xx.o
- .debug_info    0x00002a6c      0x443 ..\obj\syscalls.o
- .debug_info    0x00002eaf      0x100 ..\obj\startup_constructor.o
+ .debug_info    0x000001ac      0xa6c ..\obj\task.o
+ .debug_info    0x00000c18      0x1a3 ..\obj\startup_stm32f4xx.o
+ .debug_info    0x00000dbb      0x4f2 ..\obj\main.o
+ .debug_info    0x000012ad      0xf65 ..\obj\printf.o
+ .debug_info    0x00002212      0x281 ..\obj\list.o
+ .debug_info    0x00002493      0x5f5 ..\obj\system_stm32f4xx.o
+ .debug_info    0x00002a88      0x443 ..\obj\syscalls.o
+ .debug_info    0x00002ecb      0x100 ..\obj\startup_constructor.o
 
 .debug_abbrev   0x00000000      0xb96
  .debug_abbrev  0x00000000       0xe6 ..\obj\mem.o
@@ -1109,35 +1109,35 @@ OUTPUT(Dev_DrvPWM.elf elf32-littlearm)
  .debug_ranges  0x000001c8       0x50 ..\obj\syscalls.o
  .debug_ranges  0x00000218       0x10 ..\obj\startup_constructor.o
 
-.debug_line     0x00000000     0x1068
+.debug_line     0x00000000     0x106a
  .debug_line    0x00000000       0xbb ..\obj\mem.o
- .debug_line    0x000000bb      0x2a9 ..\obj\task.o
- .debug_line    0x00000364      0x16e ..\obj\startup_stm32f4xx.o
- .debug_line    0x000004d2      0x204 ..\obj\main.o
- .debug_line    0x000006d6      0x3f3 ..\obj\printf.o
- .debug_line    0x00000ac9      0x12d ..\obj\list.o
- .debug_line    0x00000bf6      0x1ae ..\obj\system_stm32f4xx.o
- .debug_line    0x00000da4      0x19b ..\obj\syscalls.o
- .debug_line    0x00000f3f      0x129 ..\obj\startup_constructor.o
+ .debug_line    0x000000bb      0x2ab ..\obj\task.o
+ .debug_line    0x00000366      0x16e ..\obj\startup_stm32f4xx.o
+ .debug_line    0x000004d4      0x204 ..\obj\main.o
+ .debug_line    0x000006d8      0x3f3 ..\obj\printf.o
+ .debug_line    0x00000acb      0x12d ..\obj\list.o
+ .debug_line    0x00000bf8      0x1ae ..\obj\system_stm32f4xx.o
+ .debug_line    0x00000da6      0x19b ..\obj\syscalls.o
+ .debug_line    0x00000f41      0x129 ..\obj\startup_constructor.o
 
-.debug_str      0x00000000     0x1412
+.debug_str      0x00000000     0x141e
  .debug_str     0x00000000      0x103 ..\obj\mem.o
                                 0x164 (size before relaxing)
- .debug_str     0x00000103      0x821 ..\obj\task.o
-                                0x91a (size before relaxing)
- .debug_str     0x00000924       0xd7 ..\obj\startup_stm32f4xx.o
+ .debug_str     0x00000103      0x82d ..\obj\task.o
+                                0x92c (size before relaxing)
+ .debug_str     0x00000930       0xd7 ..\obj\startup_stm32f4xx.o
                                 0x1d0 (size before relaxing)
- .debug_str     0x000009fb      0x187 ..\obj\main.o
-                                0x338 (size before relaxing)
- .debug_str     0x00000b82      0x4dc ..\obj\printf.o
+ .debug_str     0x00000a07      0x187 ..\obj\main.o
+                                0x34a (size before relaxing)
+ .debug_str     0x00000b8e      0x4dc ..\obj\printf.o
                                 0x61c (size before relaxing)
- .debug_str     0x0000105e       0xf0 ..\obj\list.o
+ .debug_str     0x0000106a       0xf0 ..\obj\list.o
                                 0x18b (size before relaxing)
- .debug_str     0x0000114e       0xdc ..\obj\system_stm32f4xx.o
+ .debug_str     0x0000115a       0xdc ..\obj\system_stm32f4xx.o
                                 0x346 (size before relaxing)
- .debug_str     0x0000122a      0x13e ..\obj\syscalls.o
+ .debug_str     0x00001236      0x13e ..\obj\syscalls.o
                                 0x294 (size before relaxing)
- .debug_str     0x00001368       0xaa ..\obj\startup_constructor.o
+ .debug_str     0x00001374       0xaa ..\obj\startup_constructor.o
                                 0x192 (size before relaxing)
 
 .comment        0x00000000       0x70

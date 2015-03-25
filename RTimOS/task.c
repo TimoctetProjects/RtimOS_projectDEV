@@ -73,7 +73,7 @@ __attribute__ ( ( isr, naked ) );
 static void
 Task_GetNextTask();
 
-static unsigned int*
+static unsigned long*
 Task_StackInit(	Task_s*			_Task,
 				unsigned long 	StackSize,
 				unsigned long 	_ptr_TaskFunction,
@@ -163,7 +163,7 @@ Task_Create(	unsigned long 		StackSize,
 		CurrentTaskRunning = pNewTask;
 		FirstTask++;
 	} else
-		List_add(pNewTask, CurrentTaskRunning);
+		list_add(pNewTask, CurrentTaskRunning);
 
 	return pNewTask;
 }
@@ -178,7 +178,7 @@ Task_Create(	unsigned long 		StackSize,
   * @param  _StackSize			Size of the stack
   * @retval Pointer to the botom of the stack
   */
-static unsigned int*
+static unsigned long*
 Task_StackInit(	Task_s*			_Task,
 				unsigned long	StackSize,
 				unsigned long 	_ptr_TaskFunction,
@@ -199,14 +199,14 @@ Task_StackInit(	Task_s*			_Task,
 	//    ...
 	//    [ R4    ] <-- Adresse la plus basse du cotexte
 
-	unsigned int* 		pStack_init  = NULL;
+	unsigned long* 		pStack_init  = NULL;
 	Stack_Frame_HW_s* 	ProcessStack = NULL;
 
 	//------------------ Allocate memory for stack
-	unsigned int* pStack = (unsigned int*) malloc(StackSize * sizeof(unsigned int));
+	unsigned long* pStack = (unsigned long*) malloc(StackSize * sizeof(unsigned long));
 	if(pStack == NULL)
 		return NULL;
-	mem_ClearZone(pStack, StackSize * sizeof(unsigned int));
+	mem_ClearZone(pStack, StackSize * sizeof(unsigned long));
 
 	//------------------ Initialize start of stack
 	// In order to detect stack overflow
@@ -217,8 +217,8 @@ Task_StackInit(	Task_s*			_Task,
 	// Make it point to R4
 	// just like if it had already been called
 	// Because the first thing we'll do is to unstack R4-R11
-	_Task->PSP_value = 		((unsigned int) pStack)
-							+ 	StackSize*sizeof(unsigned int)
+	_Task->PSP_value = 		((unsigned long) pStack)
+							+ 	StackSize*sizeof(unsigned long)
 							- (sizeof(Stack_Frame_HW_s)
 							+ sizeof(Stack_Frame_SW_s));
 
