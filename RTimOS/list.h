@@ -4,7 +4,7 @@
   * @author    duclos timothe
   * @version   V0.1
   * @date      09/03/2015
-  * @brief     Gestion de listes doublement chainees
+  * @brief     This software handles double linked list (linear & cirular)
   ******************************************************************************
 */
 
@@ -13,11 +13,31 @@
 
 /**
  ******************************************************************************
+ * Include
+ *
+ */
+#include "RtimOS.h"
+
+/**
+ ******************************************************************************
  * Exported macros definition
  *
  */
+/**
+	* @brief 	Initialize the list_head struct of a object in a circular way
+	* @param 	lIST 	Object's adress with the list head to initialize
+*/
 #define LIST_HEAD_INIT(lIST) \
 	*((list_head_s*)(lIST)) = (list_head_s) { (list_head_s*)(lIST), (list_head_s*)(lIST) }
+
+
+/**
+	* @brief 	Initialize the list_head struct of a object in a linear way
+	* @param 	lIST 	Object's adress with the list head to initialize
+*/
+#define LISTLINEAR_HEAD_INIT(lIST) \
+		*((list_head_s*)(lIST)) = (list_head_s) { NULL, NULL }
+
 
 /**
  ******************************************************************************
@@ -34,9 +54,14 @@ typedef struct _list_head_s {
  * Exported function prototype
  *
  */
-inline void list_add_tail	(void* NewEntry, void* head);
-inline void list_add		(void* NewEntry, void* head);
-inline void list_del		(void* DoomedEntry);
+/** For both Double circular & linear linked lists*/
+inline void list_add_tail	(void* pNewEntry, void* pHead);
+inline void list_add		(void* pNewEntry, void* pHead);
+inline void list_del		(void* pDoomedEntry);
+
+/** For both Double circular & linear linked lists*/
+void ListLinear_add_end		(void* pNewEntry, void* _pHead);
+void ListLinear_add_start	(void* const pNewEntry, void* const _pHead);
 
 
 #endif /** LIST_H */

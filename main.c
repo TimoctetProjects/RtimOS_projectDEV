@@ -20,8 +20,6 @@
 #define LED2 (1<<14)
 #define LED3 (1<<15)
 
-#define NULL	0
-
 void LED_initialize(void); 	// Initialize LED
 void task0(void); 			// Toggle LED0
 void task1(void); 			// Toggle LED1
@@ -37,6 +35,8 @@ Task_s* test_Task0;
 Task_s* test_Task1;
 Task_s* test_Task2;
 Task_s* test_Task3;
+
+
 
 
 // -------------------------------------------------------------

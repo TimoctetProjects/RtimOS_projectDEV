@@ -29,8 +29,6 @@
 
 #define __GetOffset_byte(type, field)	((unsigned long)&(((type*)0)->field))
 
-#define NULL							0
-
 
 /**
  ******************************************************************************
