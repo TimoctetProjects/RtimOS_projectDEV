@@ -134,10 +134,14 @@ _list_add(	list_head_s* new,
 			list_head_s* prev,
 			list_head_s* next)
 {
-	 next->prev = new;
+	if(next)	// With linear list it could be NULL
+		next->prev = new;
+
 	 new->next = next;
 	 new->prev = prev;
-	 prev->next = new;
+
+	 if(prev)	// With linear list it could be NULL
+		 prev->next = new;
 }
 
 /**
@@ -147,8 +151,11 @@ static inline void
 _list_del(	list_head_s* prev,
 			list_head_s* next)
 {
-	next->prev = prev;
-	prev->next = next;
+	if(next)	// With linear list it could be NULL
+		next->prev = prev;
+
+	if(prev)	// With linear list it could be NULL
+		prev->next = next;
 }
 
 
@@ -162,7 +169,7 @@ _list_del(	list_head_s* prev,
 #if VALIDATION_LIST_LINEAIRE
 
 	unsigned char
-	VALIDATION_list_lineaire()
+	VALIDATION_list_linear()
 	{
 		list_head_s list1, list2, list3, list4, list5, list0;
 
@@ -195,5 +202,42 @@ _list_del(	list_head_s* prev,
 	}
 
 #endif /** VALIDATION_LIST_LINEAIRE */
+
+#if VALIDATION_LIST_CIRULAIR
+
+	unsigned char
+	VALIDATION_list_circular()
+	{
+		list_head_s list1, list2, list3, list4, list5, list0;
+
+		LISTCIRCULAR_HEAD_INIT(&list1);
+		LISTCIRCULAR_HEAD_INIT(&list2);
+		LISTCIRCULAR_HEAD_INIT(&list3);
+		LISTCIRCULAR_HEAD_INIT(&list4);
+		LISTCIRCULAR_HEAD_INIT(&list0);
+		LISTCIRCULAR_HEAD_INIT(&list5);
+
+		list_add			(&list3, &list1, 0);
+		list_add_tail		(&list2, &list3, 0);
+		list_add			(&list4, &list3, 0);
+		list_add_tail		(&list0, &list1, 0);
+		list_add			(&list5, &list4, 0);
+
+		return(		list0.prev == &list5
+				&&	list0.next == &list1
+				&&	list1.prev == &list0
+				&&	list1.next == &list2
+				&&	list2.prev == &list1
+				&&	list2.next == &list3
+
+				&&	list3.next == &list4
+				&&	list3.prev == &list2
+				&&	list4.next == &list5
+				&&	list4.prev == &list3
+				&&	list5.next == &list0
+				&&	list5.prev == &list4	);
+	}
+
+#endif /** VALIDATION_LIST_CIRULAIR */
 
 /***********************************END OF FILE********************************/

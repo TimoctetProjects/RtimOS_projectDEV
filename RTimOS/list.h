@@ -66,8 +66,11 @@ void ListLinear_add_start	(void* const pNewEntry, void* const _pHead, unsigned l
 
 /** Validation */
 #if VALIDATION_LIST_LINEAIRE
-	unsigned char VALIDATION_list_lineaire();
-#endif
+	unsigned char VALIDATION_list_linear();
+#endif /** VALIDATION_LIST_LINEAIRE */
+#if VALIDATION_LIST_CIRULAIR
+	unsigned char VALIDATION_list_circular();
+#endif /** VALIDATION_LIST_LINEAIRE */
 
 #endif /** LIST_H */
 
