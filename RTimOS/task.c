@@ -108,10 +108,17 @@ initTimOS()
 {
 	#if IS_VALIDATION
 
+		unsigned char resultat = 1;
 
 		#if VALIDATION_LIST_LINEAIRE
-			VALIDATION_list_lineaire();
+			resultat &= VALIDATION_list_linear();
 		#endif /** VALIDATION_LIST_LINEAIRE */
+
+		#if VALIDATION_LIST_CIRULAIR
+			resultat &= VALIDATION_list_circular();
+		#endif /** VALIDATION_LIST_LINEAIRE */
+
+			asm("nop");
 
 	#endif /** IS_VALIDATION */
 

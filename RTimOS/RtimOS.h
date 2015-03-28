@@ -17,6 +17,20 @@
  *
  */
 
+/**
+   ******************************************************************************
+ * Exported Types
+ *
+ */
+typedef enum {
+	FAIL = 0,
+	PASS = !FAIL
+}ResultTest_e;
+
+typedef enum {
+	STATUS_FINIS = 0,
+	STATUS_ENCOURS = !STATUS_FINIS
+}Status_e;
 
 /**
    ******************************************************************************
@@ -45,7 +59,7 @@
  *
  */
 /** @brief Validating ALL */
-#define VALDIATION					1
+#define VALDIATION					0
 
 
 /** @brief Linked list */
@@ -58,5 +72,8 @@
 #define IS_VALIDATION	\
 	VALIDATION_LIST_CIRULAIR | VALIDATION_LIST_LINEAIRE
 
+
+
 #endif /** RTIMOS_H */
+
 /***********************************END OF FILE*******************************/

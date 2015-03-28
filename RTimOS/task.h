@@ -17,6 +17,7 @@
  *
  */
 #include "list.h"
+#include "timer.h"
 
 /**
  ******************************************************************************
@@ -32,11 +33,6 @@
  * Exported type definition
  *
  */
-typedef enum {
-	FAIL = 0,
-	PASS = !FAIL
-}Status_e;
-
 /** @brief Etat d'une tache */
 typedef enum {
 	TaskReady = 0,
@@ -71,10 +67,12 @@ typedef struct _Task_s{
  *
  */
 inline unsigned long getSystickCount();
+
 unsigned char 	initTimOS	();
 Task_s* 		Task_Create	(	unsigned long StackSize,
 								unsigned long _ptr_TaskFunction,
 								void* _ptr_Param	);
+
 void Task_suspend(unsigned long TickToWait_ticks);
 
 
