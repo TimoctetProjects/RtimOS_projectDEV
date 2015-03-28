@@ -55,7 +55,7 @@ void* (*mem_allocation)(unsigned int _size) = _mem_allocationinit;
   * @param	pStartAdress	Adress of the begining of the zone to clear
   * 		length_byte		Length of the zone (expressed in bytes)
   */
-void
+inline void
 mem_ClearZone(	void* const		_pStartAdress,
 				unsigned long 	length_byte)
 {
@@ -72,13 +72,14 @@ mem_ClearZone(	void* const		_pStartAdress,
   * 		_value			Value to set to these bytes
   * 		_length_byte	Length of the zone (expressed in bytes)
   */
-void
+inline void
 mem_SetZone(	void* const 	_pStartAdress,
 				unsigned long	value,
 				unsigned long 	length_byte)
 {
 	unsigned int pStartAdress = (unsigned int) _pStartAdress;
-
+	// TODO: Ca marche pas idiot ! T'ecrit un unsigned long avec une macro u8
+	// Faut que tu sizeof et void* et decoupe en paquet d'octet
 	for(; pStartAdress < (unsigned int)_pStartAdress + length_byte; pStartAdress++) {
 		__WriteValueToAdress_u8(pStartAdress) = value;
 	}

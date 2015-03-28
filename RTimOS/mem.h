@@ -19,8 +19,8 @@
  * Exported functions
  *
  */
-void mem_ClearZone(void*const _pStartAdress, unsigned long length_byte);
-void mem_SetZone(void*const _pStartAdress, unsigned long _value, unsigned long length_byte);
+inline void mem_ClearZone(void*const _pStartAdress, unsigned long length_byte);
+inline void mem_SetZone(void*const _pStartAdress, unsigned long _value, unsigned long length_byte);
 
 
 /***********************************END OF FILE*******************************/
