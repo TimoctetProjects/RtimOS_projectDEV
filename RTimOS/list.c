@@ -36,8 +36,7 @@ static inline void _list_del(list_head_s* prev,list_head_s* next);
   */
 inline void
 list_add(	void* NewEntry,
-			void* head,
-			unsigned long offset)
+			void* head	)
 {
 	_list_add(	((list_head_s*)NewEntry),
 				((list_head_s*)head),
@@ -51,8 +50,7 @@ list_add(	void* NewEntry,
   */
 inline void
 list_add_tail(	void* pNewEntry,
-				void* pHead,
-				unsigned long offset)
+				void* pHead	)
 {
 	_list_add(	((list_head_s*)pNewEntry),
 				((list_head_s*)pHead)->prev,
@@ -64,8 +62,7 @@ list_add_tail(	void* pNewEntry,
   * @param  _DoomedEntry		The entry to delete from the list
   */
 inline void
-list_del(	void* pDoomedEntry,
-		 	unsigned long offset)
+list_del(	void* pDoomedEntry	)
 {
 	_list_del(	((list_head_s*)pDoomedEntry)->prev,
 				((list_head_s*)pDoomedEntry)->next	);
@@ -81,8 +78,7 @@ list_del(	void* pDoomedEntry,
 */
 void
 ListLinear_add_end(	void* pNewEntry,
-					void* _pHead,
-					unsigned long offset)
+					void* _pHead	)
 {
 	// Search for list end
 	list_head_s* pLastEntry = (list_head_s *)_pHead;
@@ -106,8 +102,7 @@ ListLinear_add_end(	void* pNewEntry,
 */
 void
 ListLinear_add_start( 	void* const pNewEntry,
-						void* const _pHead,
-						unsigned long offset	)
+						void* const _pHead	)
 {
 	// Search for list start
 	list_head_s* pFirstEntry = (list_head_s *)_pHead;
@@ -134,6 +129,8 @@ _list_add(	list_head_s* new,
 			list_head_s* prev,
 			list_head_s* next)
 {
+	//__disable_irq();
+
 	if(next)	// With linear list it could be NULL
 		next->prev = new;
 
@@ -142,6 +139,8 @@ _list_add(	list_head_s* new,
 
 	 if(prev)	// With linear list it could be NULL
 		 prev->next = new;
+
+	 //__enable_irq()
 }
 
 /**
@@ -151,11 +150,15 @@ static inline void
 _list_del(	list_head_s* prev,
 			list_head_s* next)
 {
+	asm volatile ("cpsid i");	// TODO: Fichier de portage cortex m4
+
 	if(next)	// With linear list it could be NULL
 		next->prev = prev;
 
 	if(prev)	// With linear list it could be NULL
 		prev->next = next;
+
+	asm volatile ("cpsie i");	// TODO: Fichier de protage cortex m4
 }
 
 
@@ -180,11 +183,11 @@ _list_del(	list_head_s* prev,
 		LISTLINEAR_HEAD_INIT(&list0);
 		LISTLINEAR_HEAD_INIT(&list5);
 
-		list_add			(&list3, &list1, 0);
-		list_add_tail		(&list2, &list3, 0);
-		list_add			(&list4, &list3, 0);
-		ListLinear_add_start(&list0, &list4, 0);
-		ListLinear_add_end	(&list5, &list0, 0);
+		list_add			(&list3, &list1);
+		list_add_tail		(&list2, &list3);
+		list_add			(&list4, &list3);
+		ListLinear_add_start(&list0, &list4);
+		ListLinear_add_end	(&list5, &list0);
 
 		return(		list0.prev == NULL
 				&&	list0.next == &list1
@@ -217,11 +220,11 @@ _list_del(	list_head_s* prev,
 		LISTCIRCULAR_HEAD_INIT(&list0);
 		LISTCIRCULAR_HEAD_INIT(&list5);
 
-		list_add			(&list3, &list1, 0);
-		list_add_tail		(&list2, &list3, 0);
-		list_add			(&list4, &list3, 0);
-		list_add_tail		(&list0, &list1, 0);
-		list_add			(&list5, &list4, 0);
+		list_add			(&list3, &list1);
+		list_add_tail		(&list2, &list3);
+		list_add			(&list4, &list3);
+		list_add_tail		(&list0, &list1);
+		list_add			(&list5, &list4);
 
 		return(		list0.prev == &list5
 				&&	list0.next == &list1

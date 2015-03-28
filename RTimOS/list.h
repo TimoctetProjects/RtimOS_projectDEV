@@ -40,6 +40,20 @@
 
 
 /**
+	* @brief 	Get the nex element
+	* @param 	tYPE	Type that contains the list struct head
+	* 			dATA	Variable's adress declared as tYPE
+*/
+#define List_GetNext(tYPE, dATA) \
+		((tYPE *)(((list_head_s*)dATA)->next))
+
+// other version
+/*#define List_GetNext(tYPE, lIST, dATA) \
+		((tYPE *)(dATA)->lIST.next)*/
+
+
+
+/**
  ******************************************************************************
  * Exported type definition
  *
@@ -55,13 +69,13 @@ typedef struct _list_head_s {
  *
  */
 /** For both circular & linear linked lists */
-inline void list_add_tail	(void* pNewEntry, void* pHead, 	unsigned long offset);
-inline void list_add		(void* pNewEntry, void* pHead,	unsigned long offset);
-inline void list_del		(void* pDoomedEntry, 			unsigned long offset);
+inline void list_add_tail	(void* pNewEntry, void* pHead);
+inline void list_add		(void* pNewEntry, void* pHead);
+inline void list_del		(void* pDoomedEntry);
 
 /** For linear list */
-void ListLinear_add_end		(void* pNewEntry, void* _pHead, unsigned long offset);
-void ListLinear_add_start	(void* const pNewEntry, void* const _pHead, unsigned long offset);
+void ListLinear_add_end		(void* pNewEntry, void* _pHead);
+void ListLinear_add_start	(void* const pNewEntry, void* const _pHead);
 
 
 /** Validation */

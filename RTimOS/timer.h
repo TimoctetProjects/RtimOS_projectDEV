@@ -18,6 +18,7 @@
  */
 #include "list.h"
 
+// TODO: Choisir, tick ou MScount ou faire la macro
 
 /**
  ******************************************************************************
@@ -37,6 +38,9 @@ typedef struct {
 	unsigned long	CountValue_ms;	/** Value that the timer will count */
 
 	unsigned long	CallBackFunction;	/** Function's adress to call at timer's end */
+	void*			pParameter;			/** Timer callback's parameter*/
+
+	unsigned char	NeverEnding;		/** Put its value to one if you want the timer to auto restart */
 
 }Timer_s;
 
@@ -45,7 +49,12 @@ typedef struct {
  * Exported Function prototype
  *
  */
-Timer_s* Timer_Create(unsigned long	Value_ms, unsigned long pCallBack);
+Timer_s* Timer_Create(unsigned long	Value_ms, unsigned long pCallBack, void* pParam, unsigned char	AutoRestart);
+void Timer_Start(Timer_s* pTimer);
+
+inline unsigned long Timer_GetTickCount();
+
+inline void Timer_Tick();
 
 
 

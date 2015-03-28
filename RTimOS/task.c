@@ -29,10 +29,6 @@
 
 #define	TASK_LISTHEAD_OFFSET_byte	__GetOffset_byte(Task_s, list)
 
-#define _list_add_tail(a, b)	list_add_tail(a, b, TASK_LISTHEAD_OFFSET_byte)
-#define _list_add(a, b)			list_add(a, b, TASK_LISTHEAD_OFFSET_byte)
-#define _list_del(a, b)			list_del(a, TASK_LISTHEAD_OFFSET_byte)
-
 /**
  ******************************************************************************
  * Private type definition
@@ -122,13 +118,16 @@ initTimOS()
 
 	#endif /** IS_VALIDATION */
 
+	SysTick_Config(SystemCoreClock/1000); 		// 1ms SysTick interrupt on 168MHz
+
 	// Return FAIL if nos task can be loaded
-	if(!CurrentTaskRunning->list.next)
+	if(!CurrentTaskRunning)
 		return FAIL;
+
+
 
 	__set_PSP(((unsigned long)(CurrentTaskRunning->pStack) + 128*4));
 	NVIC_SetPriority(PendSV_IRQn, 0xFF); 		// Set PendSV to lowest	possible priority
-	SysTick_Config(SystemCoreClock/1000); 		// 1ms SysTick interrupt on 168MHz
 	__set_CONTROL(0x3); 						// Switch to use Process Stack, in unprivileged
 												// state by setting Control Register
 
@@ -139,8 +138,8 @@ initTimOS()
 	((pFunction)(((Stack_Frame_HW_s *)(CurrentTaskRunning->PSP_value + sizeof(Stack_Frame_SW_s)))->pc))();
 
 	// Sould not reach here
-	stop_cpu;
-	return PASS;
+	//stop_cpu;
+	return FAIL;
 }
 
 
@@ -182,7 +181,7 @@ Task_Create(	unsigned long 		StackSize,
 		CurrentTaskRunning = pNewTask;
 		FirstTask++;
 	} else
-		_list_add(pNewTask, CurrentTaskRunning);
+		list_add(pNewTask, CurrentTaskRunning);
 
 	return pNewTask;
 }
@@ -270,7 +269,7 @@ Task_GetNextTask()
 	// If there is more than one task, no need to switch context
 	if(CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next) {
 
-		NextTaskToRun 	= (Task_s*)CurrentTaskRunning->list.next;
+		NextTaskToRun 	= List_GetNext(Task_s, CurrentTaskRunning);
 		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	}
 }
@@ -294,7 +293,8 @@ void
 SysTick_Handler()
 {
 	SystickCount++;
-	Task_GetNextTask();
+	Timer_Tick();
+	//Task_GetNextTask();
 }
 
 

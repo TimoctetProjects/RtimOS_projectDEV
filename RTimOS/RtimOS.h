@@ -11,6 +11,32 @@
 #ifndef RTIMOS_H
 #define RTIMOS_H
 
+// TODO: 	Fichier de portage cortex M4 avec des macros et fonctions ASM notement pour le critical
+//			Le yielding, ...
+
+
+// TODO: 	Fichier de type avec les typedef et autres pour l'exercice
+
+
+// TODO: 	A la fin de cette partie du dev (Timer et suspension de tache OK)
+//			Proprifier le code
+
+
+// TODO:	Faire un systeme d'assert param sur liaison serie
+
+
+// TODO:	Développer la config
+
+// TODO:	Pour les taches, faire une seconde liste de tache en waiting
+
+// TODO:	Forcer le premier chargement de contexte
+//			En jetant ce que le main avait consommé
+
+// TODO:	Fonction de retour des taches (si for(;;) interrompu)
+//			Qui possed une assert et un for(;;)
+
+// TODO:	Mettre un for(;;) apres le main
+
 /**
    ******************************************************************************
  * Include
