@@ -134,7 +134,6 @@ initTimOS()
 
 	CleanTOPofStack();
 
-
 	//__set_PSP(((unsigned long)(CurrentTaskRunning->pStack) + 128*4));
 	NVIC_SetPriority(PendSV_IRQn, 0xFF); 		// Set PendSV to lowest	possible priority
 	__set_CONTROL(0x3); 						// Switch to use Process Stack, in unprivileged
@@ -144,12 +143,7 @@ initTimOS()
 
 	//LoadFirstTaskContext();
 	__asm volatile("svc 0 \n\r");
-
-	// Launch first task function normally
-	// TODO: Load context task instead of calling it
 	//((pFunction)(((Stack_Frame_HW_s *)(CurrentTaskRunning->PSP_value + sizeof(Stack_Frame_SW_s)))->pc))();
-
-
 
 	// Sould not reach here
 	//stop_cpu;
@@ -411,60 +405,6 @@ CleanTOPofStack()
 //	);
 //
 //	asm volatile("nop \n\r");
-
-//	__asm volatile (
-//					// 	LDR R0, <what to load>
-//					//  STR R0, <where to store>
-//
-//
-//					//-------------------------
-//					// Get end of stack value
-//
-//
-//
-//					// -------------------------
-//					// Save current context
-//					// Get current process stack pointer value
-//					//"MRS R0, PSP 		\n\r"		// Lecture du PSP actuellement utilise
-//													// Apres le stacking, PSP pointe sur l'adresse la plus basse
-//
-//					// Get current task pointer in R1
-//					"LDR R1, FIRSTTASK_ 	\n\r"	// R1 pointe sur CurrentTaskRunning
-//
-//					"LDR R3, [R1]	\n\r"		// R3 prend comme valeur l'adresse pointe par R1
-//
-//					"ADD R3, R3, #20	\n\r"	// R3 contient sous forme de valeur, l'adresse de task->PSP
-//
-//
-//					// -------------------------
-//					// Load next context
-//					// Get next task ID
-//
-//					// Set curr_task = next_task
-//
-//					// Load PSP value from PSP_array
-//					"LDR R0, [R3] \n\r"
-//
-//
-//					// Load R4 to R11 from task stack (8 regs)
-//					"LDMIA R0!,{R4-R11} \n\r"
-//
-//					// Set PSP to next task
-//					"MSR PSP, R0  	\n\r"
-//					//"isb			\n\r"
-//
-//					//-------------------------
-//					// Enable core IRQ
-//					"cpsie I \n\r"
-//
-//					// Resume Task execution
-//					"BX LR  	\n\r"
-//					".ALIGN 4 	\n\r"
-//
-//					" FIRSTTASK_		: .word CurrentTaskRunning \n\r"
-//
-//					".ALIGN 4 	\n\r"
-//		);
 }
 
 /**
