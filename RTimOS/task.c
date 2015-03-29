@@ -83,9 +83,8 @@ Task_StackInit(	Task_s*			_Task,
 				void*		  	_TaskArg );
 
 static void CleanTOPofStack();
+static void Task_Exit();
 
-static void LoadFirstTaskContext()
-__attribute__ ( ( naked ) );
 
 /**
  ******************************************************************************
@@ -260,6 +259,10 @@ Task_StackInit(	Task_s*			_Task,
 	// To the before last byte in task stack
 	ProcessStack->pc = (unsigned long) _ptr_TaskFunction;
 
+	//----------------- Initialize return adress
+	// If the task returns it will enter an empy infinity loop
+	ProcessStack->lr = (unsigned long) &Task_Exit;
+
 	//------------------ Initialize xPCR
 	// it's the last byte in task stack
 	// Allow to enable Thumb mode (T bit to 1)
@@ -306,12 +309,12 @@ SysTick_Handler()
 	Task_GetNextTask();
 }
 
-extern unsigned long _eram;
 
-unsigned long _EndOfRamValue;
-
-static unsigned long _test;
-
+void
+Task_Exit()
+{
+	for(;;);
+}
 
 void
 SVC_Handler()
@@ -323,34 +326,18 @@ SVC_Handler()
 			"LDR R0, [R0, #20]	\n\r"
 
 			//----------
-			"LDR R1, TEST	\n\r"
-
 
 			"LDMIA R0!,{R4-R11} \n\r"
 
 			"MSR PSP, R0		\n\r"
 
-			"STR R0, [R1]				\n\r"
-
-			//"isb				\n\r"
-
-			".ALIGN 4		\n\r"
-
-			"TEST : .word _test	\n\r"
-	);
-
-	asm volatile("nop \n\r");
-
-
-	__asm volatile(
-
+			"isb			\n\r"
 			"BX LR			\n\r"
 			".ALIGN 4		\n\r"
 
 			" FIRSTTASK_		: .word CurrentTaskRunning \n\r"
+
 	);
-
-
 }
 
 /**
@@ -359,22 +346,12 @@ SVC_Handler()
 static void
 CleanTOPofStack()
 {
-
-
-
 	__asm volatile(
-
-			//----------
-			//"LDR R1, ENDOFRAMVALUE_	\n\r"
 
 			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
 			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
 			"LDR R0, =0x08000000	\n\r"
 			"LDR R0, [R0]			\n\r"
-
-			//"STR R0, [R1]				\n\r"
-
-			//"LDR R0, [R0]		\n\r"
 
 			// On fait pointer MSP sur la fin de la stack afin de detruire l'impact qu'il y avait sur le main
 			"MSR	MSP, R0		\n\r"
@@ -385,26 +362,7 @@ CleanTOPofStack()
 			"dsb				\n\r"
 			"isb				\n\r"
 
-			//"ENDOFRAMVALUE_ : .word _EndOfRamValue	\n\r"
 	);
-
-
-//	__asm volatile(
-//
-//			//----------
-//			"LDR R1, TEST	\n\r"
-//
-//			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
-//			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
-//			"MRS R0, MSP 		\n\r"
-//			//"LDR R0, [R0]			\n\r"
-//
-//			"STR R0, [R1]				\n\r"
-//
-//			"TEST : .word _test	\n\r"
-//	);
-//
-//	asm volatile("nop \n\r");
 }
 
 /**

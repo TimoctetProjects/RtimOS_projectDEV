@@ -253,8 +253,6 @@ void (* const g_pfnVectors[])(void) =
   
 };
 
-static unsigned long _test;
-
 /**
   * @brief  This is the code that gets called when the processor first
   *         starts execution following a reset event. Only the absolutely
