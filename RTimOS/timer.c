@@ -17,6 +17,8 @@
 #include "mem.h"
 #include <stdlib.h>
 
+// TODO: Modif config timer
+
 /**
  ******************************************************************************
  * Private macros definition
@@ -55,6 +57,9 @@ static Timer_s*		 pFirstTimer;
   * @brief  Create the timer
   * @param	Value_ms	Value to count, expressed in millisecond
   * 		pCallBack	Function's adress to call on timer's end
+  * 		pParam		Parameter to pass to the timer's callback
+  * 					(usefull if several timer share the same function)
+  * 		AutoRestart	Allow the timer to auto-restart at it's end
   * @retval	Newly created Timer's adress
   */
 Timer_s*

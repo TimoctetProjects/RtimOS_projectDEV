@@ -21,49 +21,29 @@
 #define LED2 (1<<14)
 #define LED3 (1<<15)
 
-void LED_initialize(void); 	// Initialize LED
-void task0(void); 			// Toggle LED0
-void task1(void); 			// Toggle LED1
-void task2(void); 			// Toggle LED2
-void task3(void); 			// Toggle LED3
-
 /** @brief 		Determine la longueur d'un tableau
  *  @arg pTAB	Pointeur sur la premiere case du tableau */
 #define __Tab_GetLength(pTAB) \
 	sizeof (pTAB) / sizeof *(pTAB)
 
-Task_s* test_Task0;
-Task_s* test_Task1;
-Task_s* test_Task2;
-Task_s* test_Task3;
-
-Timer_s* Timer0;
-Timer_s* Timer1;
-Timer_s* Timer2;
-Timer_s* Timer3;
-
-
 typedef struct {
 	unsigned long led_ID;
 	unsigned char inverse;
+	unsigned long SystickCount;
 }Struct_Led_s;
 
-void task_led(void* _Led);
+static Task_s*  TestTask[4];
+static Timer_s* TestTimer[4];
 
-Struct_Led_s Led0 = {
-		LED0, 0
-};
+void LED_initialize(void); 	// Initialize LED
+void TimerCallback_led(void* _Led);
+void task(void* _Led);
 
-Struct_Led_s Led1 = {
-		LED1, 0
-};
-
-Struct_Led_s Led2 = {
-		LED2, 0
-};
-
-Struct_Led_s Led3 = {
-		LED3, 0
+Struct_Led_s Leds[4] = {
+		{LED0, 0, 0x80},
+		{LED1, 0, 0x100},
+		{LED2, 0, 0x200},
+		{LED3, 0, 0x400},
 };
 
 // -------------------------------------------------------------
@@ -76,20 +56,20 @@ main()
 
 	LED_initialize();
 
-//	test_Task0 = Task_Create(128, (unsigned long)task0, NULL);
-//	test_Task1 = Task_Create(128, (unsigned long)task1, NULL);
-//	test_Task2 = Task_Create(128, (unsigned long)task2, NULL);
-//	test_Task3 = Task_Create(128, (unsigned long)task3, NULL);
+	TestTask[0] = Task_Create(128, (unsigned long)task, &Leds[0]);
+	TestTask[1] = Task_Create(128, (unsigned long)task, &Leds[1]);
+	TestTask[2] = Task_Create(128, (unsigned long)task, &Leds[2]);
+	TestTask[3] = Task_Create(128, (unsigned long)task, &Leds[3]);
 
-	Timer0 = Timer_Create(100, (unsigned long)task_led, &Led0, 1);
-	Timer1 = Timer_Create(500, (unsigned long)task_led, &Led1, 1);
-	Timer2 = Timer_Create(1000, (unsigned long)task_led, &Led2, 1);
-	Timer3 = Timer_Create(2000, (unsigned long)task_led, &Led3, 1);
-
-	Timer_Start(Timer0);
-	Timer_Start(Timer1);
-	Timer_Start(Timer2);
-	Timer_Start(Timer3);
+//	TestTimer[0] = Timer_Create(100, (unsigned long)TimerCallback_led, &Leds[0], 1);
+//	TestTimer[1] = Timer_Create(500, (unsigned long)TimerCallback_led, &Leds[1], 1);
+//	TestTimer[2] = Timer_Create(1000,(unsigned long)TimerCallback_led, &Leds[2], 1);
+//	TestTimer[3] = Timer_Create(2000,(unsigned long)TimerCallback_led, &Leds[3], 1);
+//
+//	Timer_Start(TestTimer[0]);
+//	Timer_Start(TestTimer[1]);
+//	Timer_Start(TestTimer[2]);
+//	Timer_Start(TestTimer[3]);
 
 	// Last main call, this function should never return
 	// But it will if no task can be loaded
@@ -100,8 +80,10 @@ main()
 	while(1);
 }
 
+
+// ------------------------------------------------------------
 void
-task_led(void* _Led)
+TimerCallback_led(void* _Led)
 {
 	Struct_Led_s* Led = (Struct_Led_s*)_Led;
 
@@ -115,64 +97,25 @@ task_led(void* _Led)
 	GPIOD->BSRRH =  Led->led_ID;
 }
 
-
 // ------------------------------------------------------------
 void
-task0() // Toggle LED #0
+task(void* _Led) // Toggle LED #0
 {
+	Struct_Led_s* Led = (Struct_Led_s*)_Led;
+
 	while (1) {
-		if (getSystickCount() & 0x80) {
-			GPIOD->BSRRL = LED0;
+
+		if(Led == Leds)
+			asm volatile("nop \n\r");
+
+		if (getSystickCount() & Led->SystickCount) {
+			GPIOD->BSRRL = Led->led_ID;
 		}
 
 		else {
-			GPIOD->BSRRH = LED0;
+			GPIOD->BSRRH = Led->led_ID;
 		}
 	}
-}
-
-// ------------------------------------------------------------
-void
-task1() // Toggle LED #1
-{
-	while (1) {
-		if (getSystickCount() & 0x100){
-			GPIOD->BSRRL = LED1;
-		}
-
-		else {
-			GPIOD->BSRRH = LED1;
-		}
-	}
-}
-// ------------------------------------------------------------
-void
-task2() // Toggle LED #2
-{
-	while (1) {
-		if (getSystickCount() & 0x200){
-			GPIOD->BSRRL = LED2;
-		}
-
-		else {
-			GPIOD->BSRRH = LED2;
-		}
-	}
-}
-
-// ------------------------------------------------------------
-void
-task3() // Toggle LED #3
-{
-	while (1) {
-		if (getSystickCount() & 0x400){
-			GPIOD->BSRRL = LED3;
-		}
-
-		else {
-			GPIOD->BSRRH = LED3;
-		}
-	};
 }
 
 
@@ -200,5 +143,3 @@ LED_initialize()
 	return;
 }
 // ------------------------------------------------------------
-
-

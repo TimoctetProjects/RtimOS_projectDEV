@@ -75,6 +75,8 @@ Task_s* 		Task_Create	(	unsigned long StackSize,
 
 void Task_suspend(unsigned long TickToWait_ticks);
 
+void LoadFirstContext();
+
 
 
 #endif /** TASK_H */

@@ -27,3 +27,10 @@ Dev_DrvPWM/Debug/obj/system_stm32f4xx.o
 Dev_DrvPWM/Debug/obj/task.o
 Dev_DrvPWM/Debug/obj/timer.o
 Dev_DrvPWM/Dev_DrvPWM.elf.xcodeproj/project.pbxproj
+Dev_DrvPWM.cogui
+Dev_DrvPWM.comarker
+Dev_DrvPWM.coproj
+Dev_DrvPWM/Debug/obj/history.xml
+Dev_DrvPWM/Debug/obj/main.o
+Dev_DrvPWM/Debug/obj/task.o
+Dev_DrvPWM/Dev_DrvPWM.elf.xcodeproj/project.pbxproj

@@ -128,14 +128,16 @@ initTimOS()
 
 	__set_PSP(((unsigned long)(CurrentTaskRunning->pStack) + 128*4));
 	NVIC_SetPriority(PendSV_IRQn, 0xFF); 		// Set PendSV to lowest	possible priority
-	__set_CONTROL(0x3); 						// Switch to use Process Stack, in unprivileged
+	//__set_CONTROL(0x3); 						// Switch to use Process Stack, in unprivileged
 												// state by setting Control Register
 
 	__ISB(); 									// Flush processor cache
 
 	// Launch first task function normally
 	// TODO: Load context task instead of calling it
-	((pFunction)(((Stack_Frame_HW_s *)(CurrentTaskRunning->PSP_value + sizeof(Stack_Frame_SW_s)))->pc))();
+	//((pFunction)(((Stack_Frame_HW_s *)(CurrentTaskRunning->PSP_value + sizeof(Stack_Frame_SW_s)))->pc))();
+
+	LoadFirstContext();
 
 	// Sould not reach here
 	//stop_cpu;
@@ -295,9 +297,127 @@ SysTick_Handler()
 {
 	SystickCount++;
 	Timer_Tick();
-	//Task_GetNextTask();
+	Task_GetNextTask();
 }
 
+extern unsigned long _eram;
+
+unsigned long _EndOfRamValue;
+
+static unsigned long _test;
+
+/**
+  * @brief  This exception handling the contexts switching
+  */
+void
+LoadFirstContext()
+{
+
+
+
+	__asm volatile(
+
+			//----------
+			"LDR R1, ENDOFRAMVALUE_	\n\r"
+
+			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
+			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
+			"LDR R0, =0x08000000	\n\r"
+			"LDR R0, [R0]			\n\r"
+
+			"STR R0, [R1]				\n\r"
+
+			"LDR R0, [R0]		\n\r"
+
+			// On fait pointer MSP sur la fin de la stack afin de detruire l'impact qu'il y avait sur le main
+			"MSR	MSP, R0		\n\r"
+
+			// Activation des IRQ et vidage du cache
+			"cpsie		i		\n\r"
+			"cpsie		f		\n\r"
+			"dsb				\n\r"
+			"isb				\n\r"
+
+			"ENDOFRAMVALUE_ : .word _EndOfRamValue	\n\r"
+	);
+
+	__asm volatile("nop \n\r");
+
+
+	__asm volatile(
+
+			//----------
+			"LDR R1, TEST	\n\r"
+
+			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
+			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
+			"MRS R0, MSP 		\n\r"
+			//"LDR R0, [R0]			\n\r"
+
+			"STR R0, [R1]				\n\r"
+
+			"TEST : .word _test	\n\r"
+	);
+
+	asm volatile("nop \n\r");
+
+
+	__asm volatile ("MSR control, 0x03" );
+
+//	__asm volatile (
+//					// 	LDR R0, <what to load>
+//					//  STR R0, <where to store>
+//
+//
+//					//-------------------------
+//					// Get end of stack value
+//
+//
+//
+//					// -------------------------
+//					// Save current context
+//					// Get current process stack pointer value
+//					//"MRS R0, PSP 		\n\r"		// Lecture du PSP actuellement utilise
+//													// Apres le stacking, PSP pointe sur l'adresse la plus basse
+//
+//					// Get current task pointer in R1
+//					"LDR R1, FIRSTTASK_ 	\n\r"	// R1 pointe sur CurrentTaskRunning
+//
+//					"LDR R3, [R1]	\n\r"		// R3 prend comme valeur l'adresse pointe par R1
+//
+//					"ADD R3, R3, #20	\n\r"	// R3 contient sous forme de valeur, l'adresse de task->PSP
+//
+//
+//					// -------------------------
+//					// Load next context
+//					// Get next task ID
+//
+//					// Set curr_task = next_task
+//
+//					// Load PSP value from PSP_array
+//					"LDR R0, [R3] \n\r"
+//
+//
+//					// Load R4 to R11 from task stack (8 regs)
+//					"LDMIA R0!,{R4-R11} \n\r"
+//
+//					// Set PSP to next task
+//					"MSR PSP, R0  	\n\r"
+//					//"isb			\n\r"
+//
+//					//-------------------------
+//					// Enable core IRQ
+//					"cpsie I \n\r"
+//
+//					// Resume Task execution
+//					"BX LR  	\n\r"
+//					".ALIGN 4 	\n\r"
+//
+//					" FIRSTTASK_		: .word CurrentTaskRunning \n\r"
+//
+//					".ALIGN 4 	\n\r"
+//		);
+}
 
 /**
   * @brief  This exception handling the contexts switching
@@ -313,7 +433,7 @@ PendSV_Handler()
 					// Disable core IRQ
 					"cpsid I \n\r"
 
-
+					//"isb \b\r"
 
 					// -------------------------
 					// Save current context
@@ -367,6 +487,7 @@ PendSV_Handler()
 					// Set PSP to next task
 					"MSR PSP, R0  \n\r"
 
+				//	"isb 	\n\r"
 
 					//-------------------------
 					// Enable core IRQ
