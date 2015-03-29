@@ -277,23 +277,6 @@ void Default_Reset_Handler(void)
   }
 
 
-	__asm volatile(
-
-			//----------
-			"LDR R1, TEST	\n\r"
-
-			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
-			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
-			"MRS R0, MSP 		\n\r"
-			//"LDR R0, [R0]			\n\r"
-
-			"STR R0, [R1]				\n\r"
-
-			"TEST : .word _test	\n\r"
-	);
-
-	asm volatile("nop \n\r");
-
   /* Zero fill the bss segment.  This is done with inline assembly since this
      will clear the value of pulDest if it is not kept in a register. */
   __asm("  ldr     r0, =_sbss\n"

@@ -69,6 +69,10 @@ void
 PendSV_Handler(void)
 __attribute__ ( ( isr, naked ) );
 
+void
+SVC_Handler(void)
+__attribute__ ( ( isr, naked ) );
+
 static void
 Task_GetNextTask();
 
@@ -78,6 +82,10 @@ Task_StackInit(	Task_s*			_Task,
 				unsigned long 	_ptr_TaskFunction,
 				void*		  	_TaskArg );
 
+static void CleanTOPofStack();
+
+static void LoadFirstTaskContext()
+__attribute__ ( ( naked ) );
 
 /**
  ******************************************************************************
@@ -124,20 +132,24 @@ initTimOS()
 	if(!CurrentTaskRunning)
 		return FAIL;
 
+	CleanTOPofStack();
 
 
-	__set_PSP(((unsigned long)(CurrentTaskRunning->pStack) + 128*4));
+	//__set_PSP(((unsigned long)(CurrentTaskRunning->pStack) + 128*4));
 	NVIC_SetPriority(PendSV_IRQn, 0xFF); 		// Set PendSV to lowest	possible priority
-	//__set_CONTROL(0x3); 						// Switch to use Process Stack, in unprivileged
+	__set_CONTROL(0x3); 						// Switch to use Process Stack, in unprivileged
 												// state by setting Control Register
 
 	__ISB(); 									// Flush processor cache
+
+	//LoadFirstTaskContext();
+	__asm volatile("svc 0 \n\r");
 
 	// Launch first task function normally
 	// TODO: Load context task instead of calling it
 	//((pFunction)(((Stack_Frame_HW_s *)(CurrentTaskRunning->PSP_value + sizeof(Stack_Frame_SW_s)))->pc))();
 
-	LoadFirstContext();
+
 
 	// Sould not reach here
 	//stop_cpu;
@@ -306,11 +318,52 @@ unsigned long _EndOfRamValue;
 
 static unsigned long _test;
 
+
+void
+SVC_Handler()
+{
+	__asm volatile(
+
+			"LDR R0, FIRSTTASK_	\n\r"
+			"LDR R0, [R0]		\n\r"
+			"LDR R0, [R0, #20]	\n\r"
+
+			//----------
+			"LDR R1, TEST	\n\r"
+
+
+			"LDMIA R0!,{R4-R11} \n\r"
+
+			"MSR PSP, R0		\n\r"
+
+			"STR R0, [R1]				\n\r"
+
+			//"isb				\n\r"
+
+			".ALIGN 4		\n\r"
+
+			"TEST : .word _test	\n\r"
+	);
+
+	asm volatile("nop \n\r");
+
+
+	__asm volatile(
+
+			"BX LR			\n\r"
+			".ALIGN 4		\n\r"
+
+			" FIRSTTASK_		: .word CurrentTaskRunning \n\r"
+	);
+
+
+}
+
 /**
   * @brief  This exception handling the contexts switching
   */
-void
-LoadFirstContext()
+static void
+CleanTOPofStack()
 {
 
 
@@ -318,16 +371,16 @@ LoadFirstContext()
 	__asm volatile(
 
 			//----------
-			"LDR R1, ENDOFRAMVALUE_	\n\r"
+			//"LDR R1, ENDOFRAMVALUE_	\n\r"
 
 			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
 			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
 			"LDR R0, =0x08000000	\n\r"
 			"LDR R0, [R0]			\n\r"
 
-			"STR R0, [R1]				\n\r"
+			//"STR R0, [R1]				\n\r"
 
-			"LDR R0, [R0]		\n\r"
+			//"LDR R0, [R0]		\n\r"
 
 			// On fait pointer MSP sur la fin de la stack afin de detruire l'impact qu'il y avait sur le main
 			"MSR	MSP, R0		\n\r"
@@ -338,31 +391,26 @@ LoadFirstContext()
 			"dsb				\n\r"
 			"isb				\n\r"
 
-			"ENDOFRAMVALUE_ : .word _EndOfRamValue	\n\r"
+			//"ENDOFRAMVALUE_ : .word _EndOfRamValue	\n\r"
 	);
 
-	__asm volatile("nop \n\r");
 
-
-	__asm volatile(
-
-			//----------
-			"LDR R1, TEST	\n\r"
-
-			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
-			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
-			"MRS R0, MSP 		\n\r"
-			//"LDR R0, [R0]			\n\r"
-
-			"STR R0, [R1]				\n\r"
-
-			"TEST : .word _test	\n\r"
-	);
-
-	asm volatile("nop \n\r");
-
-
-	__asm volatile ("MSR control, 0x03" );
+//	__asm volatile(
+//
+//			//----------
+//			"LDR R1, TEST	\n\r"
+//
+//			// Lecture de l'adresse de fin de RAM dans R1 soit ENDOFRAMVALUE_
+//			// Adresse situee dans les 4 premiers octets (premier mot) du tableau de vecteur d'interruption
+//			"MRS R0, MSP 		\n\r"
+//			//"LDR R0, [R0]			\n\r"
+//
+//			"STR R0, [R1]				\n\r"
+//
+//			"TEST : .word _test	\n\r"
+//	);
+//
+//	asm volatile("nop \n\r");
 
 //	__asm volatile (
 //					// 	LDR R0, <what to load>
