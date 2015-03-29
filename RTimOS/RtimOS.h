@@ -35,7 +35,7 @@
 // TODO:	Fonction de retour des taches (si for(;;) interrompu)
 //			Qui possed une assert et un for(;;)
 
-// TODO:	Mettre un for(;;) apres le main
+// TODO:	Mettre un for(;;) apres le main dans le reset handler au cas ou
 
 /**
    ******************************************************************************

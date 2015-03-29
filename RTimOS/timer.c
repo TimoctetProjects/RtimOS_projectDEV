@@ -79,15 +79,19 @@ Timer_Create(	unsigned long	Value_ms,
 }
 
 /**
-  * @brief  Demarrer le timer
-  * @param	pTimer	Adresse du timer
+  * @brief  Start the specified timer
+  * @param	pTimer	Timer's adress
   */
 void
-Timer_Start(	Timer_s* pTimer	)
+Timer_Start(Timer_s* pTimer)
 {
 	// TODO: assert param
+	if(!pTimer)
+		return;
 
-	if(pTimer->Status != STATUS_ENCOURS)	{
+	if(!pTimer->Status)	{
+
+		pTimer->Status = STATUS_ENCOURS;
 
 		if(!pFirstTimer) {
 			pFirstTimer = pTimer;
@@ -99,11 +103,85 @@ Timer_Start(	Timer_s* pTimer	)
 		}
 	}
 
-	pTimer->Status 			= STATUS_ENCOURS;
 	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
 	pTimer->Start_Value_ms 	= msTicks;
 }
 
+/**
+  * @brief  Get the specified timer's elapsed time
+  * @param	pTimer	Timer's adress
+  * @retval	Elapsed time
+  */
+unsigned long
+Timer_Stop(Timer_s* pTimer)
+{
+	if(!pTimer)
+		return 0;
+
+	if(pTimer->Status) {
+
+		unsigned long rtrn = Timer_GetElapsedTime_ms(pTimer);
+
+		list_del(pTimer);
+		LISTLINEAR_HEAD_INIT(pTimer);
+
+		pTimer->Status 			= STATUS_FINIS;
+		pTimer->Start_Value_ms 	= 0;
+		pTimer->Stop_Value_ms 	= 0;
+
+		return rtrn;
+	}
+
+	return 0;
+}
+
+/**
+  * @brief  Reset the specified timer
+  * @param	pTimer	Timer's adress
+  */
+void
+Timer_Reset(Timer_s* pTimer)
+{
+	if(!pTimer)
+		return;
+
+	if(pTimer->Status) {
+		list_del(pTimer);
+		LISTLINEAR_HEAD_INIT(pTimer);
+	}
+
+	pTimer->Status 			= STATUS_FINIS;
+	pTimer->Start_Value_ms 	= 0;
+	pTimer->Stop_Value_ms 	= 0;
+}
+
+/**
+  * @brief  Get the specified timer's elapsed time
+  * @param	pTimer	Timer's adress
+  * @retval	Elapsed time
+  */
+inline unsigned long
+Timer_GetElapsedTime_ms(Timer_s* pTimer)
+{
+	if(pTimer->Status && pTimer)
+		return (msTicks - pTimer->Start_Value_ms);
+
+	return 0;
+}
+
+/**
+  * @brief  Get the specified timer's remaining time
+  * @param	pTimer	Timer's adress
+  * @retval	Remaining time
+  */
+inline unsigned long
+Timer_GetRemainingTime_ms(Timer_s* pTimer)
+{
+	if(pTimer->Status && pTimer)
+		return (pTimer->Stop_Value_ms - msTicks);
+
+	return 0;
+}
 
 /**
   * @brief  Lecture of the number of tick
@@ -146,12 +224,13 @@ Timer_Tick()
 
 				// Suppres Timer from list
 				list_del(pCurrentTimer);
+				LISTLINEAR_HEAD_INIT(pCurrentTimer);
 			}
 
-			else {
+			else
 
 				pCurrentTimer->Stop_Value_ms = msTicks + pCurrentTimer->CountValue_ms;
-			}
+
 
 			// Execute Timer's callback
 			if(pCurrentTimer->CallBackFunction)

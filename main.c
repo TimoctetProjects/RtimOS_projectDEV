@@ -43,6 +43,29 @@ Timer_s* Timer2;
 Timer_s* Timer3;
 
 
+typedef struct {
+	unsigned long led_ID;
+	unsigned char inverse;
+}Struct_Led_s;
+
+void task_led(void* _Led);
+
+Struct_Led_s Led0 = {
+		LED0, 0
+};
+
+Struct_Led_s Led1 = {
+		LED1, 0
+};
+
+Struct_Led_s Led2 = {
+		LED2, 0
+};
+
+Struct_Led_s Led3 = {
+		LED3, 0
+};
+
 // -------------------------------------------------------------
 // Start of main program
 int
@@ -58,10 +81,10 @@ main()
 //	test_Task2 = Task_Create(128, (unsigned long)task2, NULL);
 //	test_Task3 = Task_Create(128, (unsigned long)task3, NULL);
 
-	Timer0 = Timer_Create(100, (unsigned long)task0, NULL, 1);
-	Timer1 = Timer_Create(500, (unsigned long)task1, NULL, 1);
-	Timer2 = Timer_Create(1000, (unsigned long)task2, NULL, 1);
-	Timer3 = Timer_Create(2000, (unsigned long)task3, NULL, 1);
+	Timer0 = Timer_Create(100, (unsigned long)task_led, &Led0, 1);
+	Timer1 = Timer_Create(500, (unsigned long)task_led, &Led1, 1);
+	Timer2 = Timer_Create(1000, (unsigned long)task_led, &Led2, 1);
+	Timer3 = Timer_Create(2000, (unsigned long)task_led, &Led3, 1);
 
 	Timer_Start(Timer0);
 	Timer_Start(Timer1);
@@ -77,103 +100,79 @@ main()
 	while(1);
 }
 
+void
+task_led(void* _Led)
+{
+	Struct_Led_s* Led = (Struct_Led_s*)_Led;
+
+	if(Led->inverse) {
+		GPIOD->BSRRL = Led->led_ID;
+		Led->inverse--;
+		return;
+	}
+
+	Led->inverse++;
+	GPIOD->BSRRH =  Led->led_ID;
+}
+
 
 // ------------------------------------------------------------
 void
 task0() // Toggle LED #0
 {
-//	while (1) {
-//		if (getSystickCount() & 0x80) {
-//			GPIOD->BSRRL = LED0;
-//		}
-//
-//		else {
-//			GPIOD->BSRRH = LED0;
-//		}
-//	}
+	while (1) {
+		if (getSystickCount() & 0x80) {
+			GPIOD->BSRRL = LED0;
+		}
 
-	static unsigned char inverse = 0;
-	if(inverse) {
-		GPIOD->BSRRL = LED0;
-		inverse--;
-		return;
+		else {
+			GPIOD->BSRRH = LED0;
+		}
 	}
-
-	inverse++;
-	GPIOD->BSRRH = LED0;
 }
 
 // ------------------------------------------------------------
 void
 task1() // Toggle LED #1
 {
-//	while (1) {
-//		if (getSystickCount() & 0x100){
-//			GPIOD->BSRRL = LED1;
-//		}
-//
-//		else {
-//			GPIOD->BSRRH = LED1;
-//		}
-//	}
-	static unsigned char inverse = 0;
-	if(inverse) {
-		GPIOD->BSRRL = LED1;
-		inverse--;
-		return;
-	}
+	while (1) {
+		if (getSystickCount() & 0x100){
+			GPIOD->BSRRL = LED1;
+		}
 
-	inverse++;
-	GPIOD->BSRRH = LED1;
+		else {
+			GPIOD->BSRRH = LED1;
+		}
+	}
 }
 // ------------------------------------------------------------
 void
 task2() // Toggle LED #2
 {
-//	while (1) {
-//		if (getSystickCount() & 0x200){
-//			GPIOD->BSRRL = LED2;
-//		}
-//
-//		else {
-//			GPIOD->BSRRH = LED2;
-//		}
-//	}
+	while (1) {
+		if (getSystickCount() & 0x200){
+			GPIOD->BSRRL = LED2;
+		}
 
-	static unsigned char inverse = 0;
-	if(inverse) {
-		GPIOD->BSRRL = LED2;
-		inverse--;
-		return;
+		else {
+			GPIOD->BSRRH = LED2;
+		}
 	}
-
-	inverse++;
-	GPIOD->BSRRH = LED2;
 }
 
 // ------------------------------------------------------------
 void
 task3() // Toggle LED #3
 {
-//	while (1) {
-//		if (getSystickCount() & 0x400){
-//			GPIOD->BSRRL = LED3;
-//		}
-//
-//		else {
-//			GPIOD->BSRRH = LED3;
-//		}
-//	};
+	while (1) {
+		if (getSystickCount() & 0x400){
+			GPIOD->BSRRL = LED3;
+		}
 
-	static unsigned char inverse = 0;
-	if(inverse) {
-		GPIOD->BSRRL = LED3;
-		inverse--;
-		return;
-	}
-
-	inverse++;
-	GPIOD->BSRRH = LED3;
+		else {
+			GPIOD->BSRRH = LED3;
+		}
+	};
 }
 
 

@@ -46,11 +46,27 @@ typedef struct {
 
 /**
  ******************************************************************************
+ * Exported Macros
+ *
+ */
+/** @brief Is the specified timer finished
+ *  @param pTIMER	Timer's adress
+ */
+#define __Timer_IsFinished(pTIMER) \
+	!pTimer->Status
+
+/**
+ ******************************************************************************
  * Exported Function prototype
  *
  */
 Timer_s* Timer_Create(unsigned long	Value_ms, unsigned long pCallBack, void* pParam, unsigned char	AutoRestart);
 void Timer_Start(Timer_s* pTimer);
+unsigned long Timer_Stop(Timer_s* pTimer);
+
+inline unsigned long Timer_GetElapsedTime_ms(Timer_s* pTimer);
+inline unsigned long Timer_GetRemainingTime_ms(Timer_s* pTimer);
+
 
 inline unsigned long Timer_GetTickCount();
 

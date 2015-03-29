@@ -271,6 +271,7 @@ Task_GetNextTask()
 
 		NextTaskToRun 	= List_GetNext(Task_s, CurrentTaskRunning);
 		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+		__ISB();
 	}
 }
 
