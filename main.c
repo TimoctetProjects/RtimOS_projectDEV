@@ -105,8 +105,7 @@ task(void* _Led) // Toggle LED #0
 
 	while (1) {
 
-		if(Led == Leds)
-			asm volatile("nop \n\r");
+
 
 		if (getSystickCount() & Led->SystickCount) {
 			GPIOD->BSRRL = Led->led_ID;
@@ -115,6 +114,8 @@ task(void* _Led) // Toggle LED #0
 		else {
 			GPIOD->BSRRH = Led->led_ID;
 		}
+
+		//Task_Delay_tick(200);
 	}
 }
 

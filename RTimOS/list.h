@@ -47,6 +47,9 @@
 #define List_GetNext(tYPE, dATA) \
 		((tYPE *)(((list_head_s*)dATA)->next))
 
+#define List_GetPrev(tYPE, dATA) \
+		((tYPE *)(((list_head_s*)dATA)->prev))
+
 // other version
 /*#define List_GetNext(tYPE, lIST, dATA) \
 		((tYPE *)(dATA)->lIST.next)*/

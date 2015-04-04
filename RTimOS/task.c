@@ -18,6 +18,7 @@
 #include "mem.h"
 #include "RtimOS_Config.h"
 #include "stm32f4xx.h"
+#include "RtimOS_portCM4.h"
 
 /**
  ******************************************************************************
@@ -85,17 +86,129 @@ Task_StackInit(	Task_s*			_Task,
 static void CleanTOPofStack();
 static void Task_Exit();
 
+void IDLE(void* pParam)
+{
+	asm volatile("nop \n\r");
+}
 
 /**
  ******************************************************************************
  * Private variables definition
  *
  */
+/** @brief	Running List's current task running*/
 static Task_s*			CurrentTaskRunning;
+/** @brief	Running List's next task running*/
 static Task_s*			NextTaskToRun;
+
+/** @brief	Waiting lists's first element */
+static Task_s*			FirstTaskWaiting;
+
+static Task_s			TaskIDLE;
+
 static unsigned long 	SystickCount;
 
 typedef void (*pFunction)(void);
+
+////////////////////////////////////////////////////////////////////////////////////
+/////////////////////
+////////////////////			Faire appel au SVC
+//////////////////////////////////////////////////////
+/////////////////// Fonction ASM qui sauvegarde la contexte, et charge la tache IDLE
+/////////////////// Un truck comme ca
+///////////////////////////////////////////////////////
+/////////////////// Jeter un oeil a FreeRTOS, ils ont forcement eu ces problematiques
+////////////////////////////////////////////////////////
+/////////////////////////////////////// (ou pas) -> pb d'architecture du Kernel
+
+void
+Task_Delay_tick(unsigned long nbTicksToDelay)
+{
+	Task_s* _CurrentTaskRunning = CurrentTaskRunning;
+
+	//------------------------- Suppress task from running list
+	// S'il y a plus d'un element
+	if(CurrentTaskRunning->list.prev != CurrentTaskRunning->list.next)
+	{
+		Task_s*	_PreviousFromCurrentTaskRunning = List_GetPrev(Task_s, CurrentTaskRunning);
+		list_del(CurrentTaskRunning);
+		CurrentTaskRunning = _PreviousFromCurrentTaskRunning;
+
+		// Je peux pas supprimer sinon avant le changement de contexte quand j'ecrit next task
+		// Je ne le connaitrait pas
+
+		// Et si je le l'ecrit a next et force un changement de contexte c'est pas dit que la systick arrive avant la pendSV
+		// Et l'ecrase
+
+		// Si j'ecrit CurrenttaskRunning tel que c'est fait, je vais sauvegarder le contexte actuel dans la stack de la tache precedente
+
+	}
+
+	else
+	{
+		// TODO: Commencer a penser a quand ya pas de tache, genre tache IDLE enfin ou du genre
+		list_add(&TaskIDLE, CurrentTaskRunning);
+		list_del(CurrentTaskRunning);
+		// Forcer un changement de contexte IDLE OK
+		// Mais l'ecrire comme ca non !
+		// Pck le contexte en cours d'execution est celui de CurrentTaskRunning d'avant l'appel
+		CurrentTaskRunning = &TaskIDLE;
+
+		// Et puis la recursivite, serieux ?
+	}
+
+
+	//------------------------- Add task to waiting list
+	if(!FirstTaskWaiting)
+	{
+		FirstTaskWaiting = _CurrentTaskRunning;
+		LISTLINEAR_HEAD_INIT(FirstTaskWaiting);
+	}
+
+	else
+	{
+		list_add(CurrentTaskRunning, FirstTaskWaiting);
+	}
+}
+
+inline void HasMadamTheTaskFinishedHERWaiting(Task_s* task);
+
+inline void
+HasMadamTheTaskFinishedHERWaiting(Task_s* task)
+{
+	Task_s* _NextFromTaskWhoseWaitingIsFinished = List_GetNext(Task_s, &task);
+
+	if(task->ResartValue_ticks <= SystickCount)
+	{
+		//------------------------- Suppress task from waiting list list
+		if(task == FirstTaskWaiting) {
+			FirstTaskWaiting = NULL;
+		}
+		list_del(task);
+
+		//------------------------- Add task to running list
+		if(CurrentTaskRunning == &TaskIDLE) {
+			LISTCIRCULAR_HEAD_INIT(CurrentTaskRunning);
+			LISTCIRCULAR_HEAD_INIT(task);
+			NextTaskToRun = task;
+
+			// TODO: Attention, ca marche pas s'il y a deux taches qui sortent a la fois
+
+		}
+
+		else
+		{
+			list_add(task, CurrentTaskRunning);
+		}
+
+
+	}
+
+	if(_NextFromTaskWhoseWaitingIsFinished != NULL)
+	{
+		HasMadamTheTaskFinishedHERWaiting(_NextFromTaskWhoseWaitingIsFinished);
+	}
+}
 
 /**
  ******************************************************************************
@@ -130,6 +243,10 @@ initTimOS()
 	// Return FAIL if nos task can be loaded
 	if(!CurrentTaskRunning)
 		return FAIL;
+
+	// Creation de la tache IDLE
+	TaskIDLE.pStack = Task_StackInit(&TaskIDLE, 128, (unsigned long)IDLE, NULL);
+	LISTCIRCULAR_HEAD_INIT(&TaskIDLE);
 
 	CleanTOPofStack();
 
@@ -242,10 +359,11 @@ Task_StackInit(	Task_s*			_Task,
 	// Make it point to R4
 	// just like if it had already been called
 	// Because the first thing we'll do is to unstack R4-R11
-	_Task->PSP_value = 		((unsigned long) pStack)
+	_Task->PSP_value = 			((unsigned long) pStack)
 							+ 	StackSize*sizeof(unsigned long)
-							- (sizeof(Stack_Frame_HW_s)
-							+ sizeof(Stack_Frame_SW_s));
+							- 	(		sizeof(Stack_Frame_HW_s)
+									+ 	sizeof(Stack_Frame_SW_s)	)
+							- 	4;
 
 
 	//------------------ Align on PSP adress like if it were a Stack_Frame_HW_s struct
@@ -302,10 +420,11 @@ getSystickCount()
   * 		& provoque a context switch
   */
 void
-SysTick_Handler()
+Port_Systick_IRQ()
 {
 	SystickCount++;
 	Timer_Tick();
+	//HasMadamTheTaskFinishedHERWaiting(FirstTaskWaiting);
 	Task_GetNextTask();
 }
 
@@ -368,6 +487,7 @@ CleanTOPofStack()
 /**
   * @brief  This exception handling the contexts switching
   */
+__attribute__ ( ( isr, naked ) )
 void
 PendSV_Handler()
 {
@@ -433,7 +553,7 @@ PendSV_Handler()
 					// Set PSP to next task
 					"MSR PSP, R0  \n\r"
 
-				//	"isb 	\n\r"
+					//	"isb 	\n\r"
 
 					//-------------------------
 					// Enable core IRQ

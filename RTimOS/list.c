@@ -14,6 +14,7 @@
  *
  */
 #include "list.h"
+#include "RtimOS_portCM4.h"
 
 /**
    ******************************************************************************
@@ -129,7 +130,7 @@ _list_add(	list_head_s* new,
 			list_head_s* prev,
 			list_head_s* next)
 {
-	//__disable_irq();
+	Port_Disable_irq();
 
 	if(next)	// With linear list it could be NULL
 		next->prev = new;
@@ -140,7 +141,7 @@ _list_add(	list_head_s* new,
 	 if(prev)	// With linear list it could be NULL
 		 prev->next = new;
 
-	 //__enable_irq()
+	 Port_Enable_irq();
 }
 
 /**
@@ -150,7 +151,7 @@ static inline void
 _list_del(	list_head_s* prev,
 			list_head_s* next)
 {
-	asm volatile ("cpsid i");	// TODO: Fichier de portage cortex m4
+	Port_Disable_irq();
 
 	if(next)	// With linear list it could be NULL
 		next->prev = prev;
@@ -158,7 +159,7 @@ _list_del(	list_head_s* prev,
 	if(prev)	// With linear list it could be NULL
 		prev->next = next;
 
-	asm volatile ("cpsie i");	// TODO: Fichier de protage cortex m4
+	Port_Enable_irq();
 }
 
 
