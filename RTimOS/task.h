@@ -18,6 +18,7 @@
  */
 #include "list.h"
 #include "timer.h"
+#include "RtimOS_portCM4.h"
 
 /**
  ******************************************************************************
@@ -38,7 +39,10 @@ typedef enum {
 	TaskReady = 0,
 	TaskRunning,
 	TaskWaiting
-}TaskState_s;
+}TaskState_e;
+
+/** @brief Function pointer to a task's handler */
+typedef void (*pFuncTask_f)(void* pArg);
 
 /** @brief Task structure */
 typedef struct _Task_s{
@@ -51,7 +55,7 @@ typedef struct _Task_s{
 	unsigned long 		StackSize;
 
 	//----------- State of task
-	TaskState_s			State;
+	TaskState_e			State;
 
 	//----------- Process Stack pointer adress value
 	unsigned int		PSP_value;
@@ -73,7 +77,8 @@ Task_s* 		Task_Create	(	unsigned long StackSize,
 								unsigned long _ptr_TaskFunction,
 								void* _ptr_Param	);
 
-void Task_suspend(unsigned long TickToWait_ticks);
+void Task_Delay(Rui32 TickToWait_ticks);
+Rui32 Task_DelayUntil(Rui32 PreviousValue_tick, Rui32 nbTicksToDelay);
 
 
 

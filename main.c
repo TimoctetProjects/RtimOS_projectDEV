@@ -107,8 +107,6 @@ task(void* _Led) // Toggle LED #0
 
 	while (1) {
 
-
-
 		if (Led->inverse) {
 			GPIOD->BSRRL = Led->led_ID;
 			Led->inverse--;
@@ -119,7 +117,7 @@ task(void* _Led) // Toggle LED #0
 			Led->inverse++;
 		}
 
-		Task_Delay_tick(Led->SystickCount);
+		Task_Delay(Led->SystickCount);
 	}
 }
 
