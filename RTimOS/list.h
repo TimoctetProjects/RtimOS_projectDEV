@@ -83,10 +83,12 @@ void ListLinear_add_start	(void* const pNewEntry, void* const _pHead);
 
 /** Validation */
 #if VALIDATION_LIST_LINEAIRE
-	unsigned char VALIDATION_list_linear();
+	unsigned char 	VALIDATION_list_linear_add();
+	unsigned char	VALIDATION_list_linear_del();
 #endif /** VALIDATION_LIST_LINEAIRE */
 #if VALIDATION_LIST_CIRULAIR
-	unsigned char VALIDATION_list_circular();
+	unsigned char 	VALIDATION_list_circular_add();
+	unsigned char 	VALIDATION_list_circular_del();
 #endif /** VALIDATION_LIST_LINEAIRE */
 
 #endif /** LIST_H */

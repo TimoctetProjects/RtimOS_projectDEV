@@ -37,6 +37,8 @@ Port_Enable_irq()
 	asm volatile ("cpsie i");
 }
 
+#define Port_YIELD		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk
+
 #define Port_Systick_IRQ 		SysTick_Handler
 #define Port_PendSV				PendSV_Handler
 #define Port_SVC				SVC_Handler

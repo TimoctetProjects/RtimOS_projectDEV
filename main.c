@@ -40,11 +40,13 @@ void TimerCallback_led(void* _Led);
 void task(void* _Led);
 
 Struct_Led_s Leds[4] = {
-		{LED0, 0, 0x80},
-		{LED1, 0, 0x100},
-		{LED2, 0, 0x200},
-		{LED3, 0, 0x400},
+		{LED0, 0, 100},
+		{LED1, 0, 500},
+		{LED2, 0, 1000},
+		{LED3, 0, 1500},
 };
+
+
 
 // -------------------------------------------------------------
 // Start of main program
@@ -107,15 +109,17 @@ task(void* _Led) // Toggle LED #0
 
 
 
-		if (getSystickCount() & Led->SystickCount) {
+		if (Led->inverse) {
 			GPIOD->BSRRL = Led->led_ID;
+			Led->inverse--;
 		}
 
 		else {
 			GPIOD->BSRRH = Led->led_ID;
+			Led->inverse++;
 		}
 
-		//Task_Delay_tick(200);
+		Task_Delay_tick(Led->SystickCount);
 	}
 }
 

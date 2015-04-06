@@ -77,18 +77,18 @@ __attribute__ ( ( isr, naked ) );
 static void
 Task_GetNextTask();
 
-static unsigned long*
-Task_StackInit(	Task_s*			_Task,
-				unsigned long 	StackSize,
-				unsigned long 	_ptr_TaskFunction,
-				void*		  	_TaskArg );
+static void
+Task_StackInit(	Task_s*	_Task,
+				Rui32 	StackSize,
+				Rui32 	_ptr_TaskFunction,
+				void*	_TaskArg );
 
 static void CleanTOPofStack();
 static void Task_Exit();
 
 void IDLE(void* pParam)
 {
-	asm volatile("nop \n\r");
+	for(;;);
 }
 
 /**
@@ -102,11 +102,11 @@ static Task_s*			CurrentTaskRunning;
 static Task_s*			NextTaskToRun;
 
 /** @brief	Waiting lists's first element */
-static Task_s*			FirstTaskWaiting;
+static Task_s*			pFirstTaskWaiting;
 
 static Task_s			TaskIDLE;
 
-static unsigned long 	SystickCount;
+static Rui32 	SystickCount;
 
 typedef void (*pFunction)(void);
 
@@ -122,93 +122,175 @@ typedef void (*pFunction)(void);
 /////////////////////////////////////// (ou pas) -> pb d'architecture du Kernel
 
 void
-Task_Delay_tick(unsigned long nbTicksToDelay)
+Task_Delay_tick(Rui32 nbTicksToDelay)
 {
-	Task_s* _CurrentTaskRunning = CurrentTaskRunning;
+//	Task_s* _CurrentTaskRunning = CurrentTaskRunning;
+//
+//	//------------------------- Suppress task from running list
+//	// S'il y a plus d'un element
+//	if(CurrentTaskRunning->list.prev != CurrentTaskRunning->list.next)
+//	{
+//		Task_s*	_PreviousFromCurrentTaskRunning = List_GetPrev(Task_s, CurrentTaskRunning);
+//		list_del(CurrentTaskRunning);
+//		CurrentTaskRunning = _PreviousFromCurrentTaskRunning;
+//
+//		// Je peux pas supprimer sinon avant le changement de contexte quand j'ecrit next task
+//		// Je ne le connaitrait pas
+//
+//		// Et si je le l'ecrit a next et force un changement de contexte c'est pas dit que la systick arrive avant la pendSV
+//		// Et l'ecrase
+//
+//		// Si j'ecrit CurrenttaskRunning tel que c'est fait, je vais sauvegarder le contexte actuel dans la stack de la tache precedente
+//
+//	}
+//
+//	else
+//	{
+//		// TODO: Commencer a penser a quand ya pas de tache, genre tache IDLE enfin ou du genre
+//		list_add(&TaskIDLE, CurrentTaskRunning);
+//		list_del(CurrentTaskRunning);
+//		// Forcer un changement de contexte IDLE OK
+//		// Mais l'ecrire comme ca non !
+//		// Pck le contexte en cours d'execution est celui de CurrentTaskRunning d'avant l'appel
+//		CurrentTaskRunning = &TaskIDLE;
+//
+//		// Et puis la recursivite, serieux ?
+//	}
+//
+//
+//	//------------------------- Add task to waiting list
+//	if(!FirstTaskWaiting)
+//	{
+//		FirstTaskWaiting = _CurrentTaskRunning;
+//		LISTLINEAR_HEAD_INIT(FirstTaskWaiting);
+//	}
+//
+//	else
+//	{
+//		list_add(CurrentTaskRunning, FirstTaskWaiting);
+//	}
 
-	//------------------------- Suppress task from running list
-	// S'il y a plus d'un element
-	if(CurrentTaskRunning->list.prev != CurrentTaskRunning->list.next)
+
+	// Si une seule tache tourne
+	if(List_GetNext(Task_s, CurrentTaskRunning) == CurrentTaskRunning)
 	{
-		Task_s*	_PreviousFromCurrentTaskRunning = List_GetPrev(Task_s, CurrentTaskRunning);
+		NextTaskToRun = &TaskIDLE;
+
+	}
+
+	// Sinon (au moins une autre tache active)
+	else
+	{
+		NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);
 		list_del(CurrentTaskRunning);
-		CurrentTaskRunning = _PreviousFromCurrentTaskRunning;
+	}
 
-		// Je peux pas supprimer sinon avant le changement de contexte quand j'ecrit next task
-		// Je ne le connaitrait pas
 
-		// Et si je le l'ecrit a next et force un changement de contexte c'est pas dit que la systick arrive avant la pendSV
-		// Et l'ecrase
+	// Ajout a la liste waiting
+	LISTLINEAR_HEAD_INIT(CurrentTaskRunning);
 
-		// Si j'ecrit CurrenttaskRunning tel que c'est fait, je vais sauvegarder le contexte actuel dans la stack de la tache precedente
-
+	if(!pFirstTaskWaiting)
+	{
+		pFirstTaskWaiting = CurrentTaskRunning;
 	}
 
 	else
 	{
-		// TODO: Commencer a penser a quand ya pas de tache, genre tache IDLE enfin ou du genre
-		list_add(&TaskIDLE, CurrentTaskRunning);
-		list_del(CurrentTaskRunning);
-		// Forcer un changement de contexte IDLE OK
-		// Mais l'ecrire comme ca non !
-		// Pck le contexte en cours d'execution est celui de CurrentTaskRunning d'avant l'appel
-		CurrentTaskRunning = &TaskIDLE;
-
-		// Et puis la recursivite, serieux ?
+		list_add(CurrentTaskRunning, pFirstTaskWaiting);
 	}
 
+	CurrentTaskRunning->ResartValue_ticks = SystickCount + nbTicksToDelay;
 
-	//------------------------- Add task to waiting list
-	if(!FirstTaskWaiting)
-	{
-		FirstTaskWaiting = _CurrentTaskRunning;
-		LISTLINEAR_HEAD_INIT(FirstTaskWaiting);
-	}
-
-	else
-	{
-		list_add(CurrentTaskRunning, FirstTaskWaiting);
-	}
+	__asm volatile( "dsb" );
+	__asm volatile( "isb" );
+	__asm volatile("svc 0x01 \n\r");
 }
 
-inline void HasMadamTheTaskFinishedHERWaiting(Task_s* task);
+inline Rui8 HasMadamTheTaskFinishedHERWaiting(Task_s* task);
 
-inline void
+inline Rui8
 HasMadamTheTaskFinishedHERWaiting(Task_s* task)
 {
-	Task_s* _NextFromTaskWhoseWaitingIsFinished = List_GetNext(Task_s, &task);
+	return (task->ResartValue_ticks <= SystickCount);
+}
 
-	if(task->ResartValue_ticks <= SystickCount)
+void
+CheckForWaitingTask()
+{
+	Task_s* _pCurrentTask;
+
+	if(!pFirstTaskWaiting)
+		return;
+
+	for(	_pCurrentTask = pFirstTaskWaiting;
+			_pCurrentTask;//List_GetNext(Task_s, _pCurrentTask); // ou !_pCurrentTask peut etre
+			_pCurrentTask = List_GetNext(Task_s, _pCurrentTask)	)
 	{
-		//------------------------- Suppress task from waiting list list
-		if(task == FirstTaskWaiting) {
-			FirstTaskWaiting = NULL;
-		}
-		list_del(task);
-
-		//------------------------- Add task to running list
-		if(CurrentTaskRunning == &TaskIDLE) {
-			LISTCIRCULAR_HEAD_INIT(CurrentTaskRunning);
-			LISTCIRCULAR_HEAD_INIT(task);
-			NextTaskToRun = task;
-
-			// TODO: Attention, ca marche pas s'il y a deux taches qui sortent a la fois
-
-		}
-
-		else
+		if(HasMadamTheTaskFinishedHERWaiting(_pCurrentTask))
 		{
-			list_add(task, CurrentTaskRunning);
+			_pCurrentTask->ResartValue_ticks = 0;
+
+			//-------------- Suppresion a la liste waiting
+			// Si c'est le seul de la liste
+			if(!List_GetNext(Task_s, _pCurrentTask) && !List_GetPrev(Task_s, _pCurrentTask))
+			{
+				pFirstTaskWaiting = NULL;
+			}
+
+			// Sinon (s'il y a d'autres elements)
+			else
+			{
+				if(_pCurrentTask == pFirstTaskWaiting)
+				{
+					pFirstTaskWaiting = List_GetNext(Task_s, _pCurrentTask);
+				}
+
+				list_del(_pCurrentTask);
+			}
+
+			//-------------- Ajout a la liste running
+			// Si c'est la tache IDLE qui tourne
+			LISTCIRCULAR_HEAD_INIT(_pCurrentTask);
+			list_add(_pCurrentTask, CurrentTaskRunning);
+			return;
 		}
-
-
-	}
-
-	if(_NextFromTaskWhoseWaitingIsFinished != NULL)
-	{
-		HasMadamTheTaskFinishedHERWaiting(_NextFromTaskWhoseWaitingIsFinished);
 	}
 }
+
+
+//	Task_s* _NextFromTaskWhoseWaitingIsFinished = List_GetNext(Task_s, &task);
+//
+//	if(task->ResartValue_ticks <= SystickCount)
+//	{
+//		//------------------------- Suppress task from waiting list list
+//		if(task == pFirstTaskWaiting) {
+//			pFirstTaskWaiting = NULL;
+//		}
+//		list_del(task);
+//
+//		//------------------------- Add task to running list
+//		if(CurrentTaskRunning == &TaskIDLE) {
+//			LISTCIRCULAR_HEAD_INIT(CurrentTaskRunning);
+//			LISTCIRCULAR_HEAD_INIT(task);
+//			NextTaskToRun = task;
+//
+//			// TODO: Attention, ca marche pas s'il y a deux taches qui sortent a la fois
+//
+//		}
+//
+//		else
+//		{
+//			list_add(task, CurrentTaskRunning);
+//		}
+//
+//
+//	}
+//
+//	if(_NextFromTaskWhoseWaitingIsFinished != NULL)
+//	{
+//		HasMadamTheTaskFinishedHERWaiting(_NextFromTaskWhoseWaitingIsFinished);
+//	}
+//}
 
 /**
  ******************************************************************************
@@ -227,11 +309,12 @@ initTimOS()
 		unsigned char resultat = 1;
 
 		#if VALIDATION_LIST_LINEAIRE
-			resultat &= VALIDATION_list_linear();
+			resultat &= VALIDATION_list_linear_add();
 		#endif /** VALIDATION_LIST_LINEAIRE */
 
 		#if VALIDATION_LIST_CIRULAIR
-			resultat &= VALIDATION_list_circular();
+			resultat &= VALIDATION_list_circular_add();
+			resultat &= VALIDATION_list_circular_del();
 		#endif /** VALIDATION_LIST_LINEAIRE */
 
 			asm("nop");
@@ -245,12 +328,13 @@ initTimOS()
 		return FAIL;
 
 	// Creation de la tache IDLE
-	TaskIDLE.pStack = Task_StackInit(&TaskIDLE, 128, (unsigned long)IDLE, NULL);
+	TaskIDLE.pStack = (Rui32*)malloc(128 * sizeof(Rui32));
+	Task_StackInit(&TaskIDLE, 128, (Rui32)IDLE, NULL);
 	LISTCIRCULAR_HEAD_INIT(&TaskIDLE);
 
 	CleanTOPofStack();
 
-	//__set_PSP(((unsigned long)(CurrentTaskRunning->pStack) + 128*4));
+	//__set_PSP(((Rui32)(CurrentTaskRunning->pStack) + 128*4));
 	NVIC_SetPriority(PendSV_IRQn, 0xFF); 		// Set PendSV to lowest	possible priority
 	__set_CONTROL(0x3); 						// Switch to use Process Stack, in unprivileged
 												// state by setting Control Register
@@ -276,34 +360,36 @@ initTimOS()
   * @retval Pointer to task newly created (NULL si error)
   */
 Task_s*
-Task_Create(	unsigned long 		StackSize,
-				unsigned long		_ptr_TaskFunction,
-				void*				_ptr_Param)
+Task_Create(	Rui32 		StackSize,
+				Rui32		_ptr_TaskFunction,
+				void*		_ptr_Param)
 {
-	static uint8_t FirstTask = 0;
-
 	//----------------- Allocate memomry for Task
 	Task_s* pNewTask = (Task_s*) malloc(sizeof(Task_s));
-	if(pNewTask == NULL)
-		return NULL;
+	if(!pNewTask)
+		return pNewTask;
 	mem_ClearZone(pNewTask, sizeof(Task_s));
 
 	//------------------ Allocate memory for stack
-	pNewTask->pStack 	= Task_StackInit(pNewTask, StackSize, _ptr_TaskFunction, _ptr_Param);
-	if(pNewTask->pStack == NULL) {
+	pNewTask->pStack = (typeof(pNewTask->pStack)) malloc(StackSize * sizeof(typeof(*pNewTask->pStack)));
+	if(!pNewTask->pStack) {
 		free(pNewTask);
-		return NULL;
+		return pNewTask;
 	}
+	mem_ClearZone(pNewTask->pStack, StackSize * sizeof(Rui32));
 
-	LISTCIRCULAR_HEAD_INIT(pNewTask);
+	//--------------- Init Stack
+	Task_StackInit(pNewTask, StackSize, _ptr_TaskFunction, _ptr_Param);
+
 
 	//----------------- Prepare struct fields in task's handle
+	LISTCIRCULAR_HEAD_INIT(pNewTask);
 	pNewTask->StackSize = StackSize;
 	pNewTask->State		= TaskReady;
 
-	if(!FirstTask) {
+	if(!CurrentTaskRunning) {
 		CurrentTaskRunning = pNewTask;
-		FirstTask++;
+
 	} else
 		list_add(pNewTask, CurrentTaskRunning);
 
@@ -320,11 +406,11 @@ Task_Create(	unsigned long 		StackSize,
   * @param  _StackSize			Size of the stack
   * @retval Pointer to the botom of the stack
   */
-static unsigned long*
-Task_StackInit(	Task_s*			_Task,
-				unsigned long	StackSize,
-				unsigned long 	_ptr_TaskFunction,
-				void*		  	_TaskArg )
+static void
+Task_StackInit(	Task_s*	_Task,
+				Rui32	StackSize,
+				Rui32 	_ptr_TaskFunction,
+				void*	_TaskArg )
 {
 
 	//    [ XPSR ] <-- 	Adresse la plus haute du contexte
@@ -341,26 +427,20 @@ Task_StackInit(	Task_s*			_Task,
 	//    ...
 	//    [ R4    ] <-- Adresse la plus basse du cotexte
 
-	unsigned long* 		pStack_init  = NULL;
+	//Rui32* 				pStack_init  = _Task->pStack;
 	Stack_Frame_HW_s* 	ProcessStack = NULL;
-
-	//------------------ Allocate memory for stack
-	unsigned long* pStack = (unsigned long*) malloc(StackSize * sizeof(unsigned long));
-	if(pStack == NULL)
-		return NULL;
-	mem_ClearZone(pStack, StackSize * sizeof(unsigned long));
 
 	//------------------ Initialize start of stack
 	// In order to detect stack overflow
-	for(pStack_init = pStack; pStack_init<pStack+4; pStack_init++)
-		*pStack_init = 0x5A5A5A5A;
+	/*for(; pStack_init<_Task->pStack+4; pStack_init++)
+		*pStack_init = 0x5A5A5A5A;*/
 
 	//------------------ Get end of Stack pointer
 	// Make it point to R4
 	// just like if it had already been called
 	// Because the first thing we'll do is to unstack R4-R11
-	_Task->PSP_value = 			((unsigned long) pStack)
-							+ 	StackSize*sizeof(unsigned long)
+	_Task->PSP_value = 			((Rui32) _Task->pStack)
+							+ 	StackSize*sizeof(Rui32)
 							- 	(		sizeof(Stack_Frame_HW_s)
 									+ 	sizeof(Stack_Frame_SW_s)	)
 							- 	4;
@@ -371,22 +451,20 @@ Task_StackInit(	Task_s*			_Task,
 	ProcessStack = (Stack_Frame_HW_s *) (_Task->PSP_value + sizeof(Stack_Frame_SW_s));
 
 	//------------------ Initialize task argument (not tested)
-	ProcessStack->r0 = (unsigned int) _TaskArg;
+	ProcessStack->r0 = (Rui32) _TaskArg;
 
 	//------------------ Initialize task function adress
 	// To the before last byte in task stack
-	ProcessStack->pc = (unsigned long) _ptr_TaskFunction;
+	ProcessStack->pc = (Rui32) _ptr_TaskFunction;
 
 	//----------------- Initialize return adress
 	// If the task returns it will enter an empy infinity loop
-	ProcessStack->lr = (unsigned long) &Task_Exit;
+	ProcessStack->lr = (Rui32) &Task_Exit;
 
 	//------------------ Initialize xPCR
 	// it's the last byte in task stack
 	// Allow to enable Thumb mode (T bit to 1)
 	ProcessStack->psr = 0x01000000;
-
-	return pStack;
 }
 
 /**
@@ -398,7 +476,9 @@ Task_GetNextTask()
 	// If there is more than one task, no need to switch context
 	if(CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next) {
 
-		NextTaskToRun 	= List_GetNext(Task_s, CurrentTaskRunning);
+		if(NextTaskToRun == CurrentTaskRunning)
+			NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);
+
 		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 		__ISB();
 	}
@@ -408,7 +488,7 @@ Task_GetNextTask()
   * @brief  Read the current systick count
   * @retval Number of systicktick irq that occured
   */
-inline unsigned long
+inline Rui32
 getSystickCount()
 {
 	return SystickCount;
@@ -424,7 +504,7 @@ Port_Systick_IRQ()
 {
 	SystickCount++;
 	Timer_Tick();
-	//HasMadamTheTaskFinishedHERWaiting(FirstTaskWaiting);
+	CheckForWaitingTask();
 	Task_GetNextTask();
 }
 
@@ -435,28 +515,61 @@ Task_Exit()
 	for(;;);
 }
 
-void
-SVC_Handler()
+#define SVC_SERVICE_STARTFRISTTASK	0x00
+#define SVC_SERVICE_YIELD			1
+
+
+void SVC_Handler_C(Rui32* svc_args);
+
+void SVC_Handler(void)
 {
-	__asm volatile(
+	asm volatile(	"TST LR, #4 \n\r"		// ; Test bit 2 of EXC_RETURN
+					"ITE EQ \n\r"
+					"MRSEQ R0, MSP \n\r"	// ; if 0, stacking used MSP, copy to R0
+					"MRSNE R0, PSP \n\r"	// ; if 1, stacking used PSP, copy to R0
+					"B %[SVC_Handler_C] \n\r"
+					".ALIGN 4 \n\r"
+					:
+					: [SVC_Handler_C] "i" (SVC_Handler_C)
+					: "r0"									);
+}
 
-			"LDR R0, FIRSTTASK_	\n\r"
-			"LDR R0, [R0]		\n\r"
-			"LDR R0, [R0, #20]	\n\r"
+void
+SVC_Handler_C(Rui32* svc_args)
+{
+	unsigned long svc_serviceID = ((char*)svc_args[6])[-2]; // *((uint8_t *)svc_args);		// WTF ?
 
-			//----------
+	switch(svc_serviceID)
+	{
+		case SVC_SERVICE_STARTFRISTTASK:
+			__asm volatile(
 
-			"LDMIA R0!,{R4-R11} \n\r"
+					"LDR R0, FIRSTTASK_	\n\r"
+					"LDR R0, [R0]		\n\r"
+					"LDR R0, [R0, #20]	\n\r"
 
-			"MSR PSP, R0		\n\r"
+					//----------
 
-			"isb			\n\r"
-			"BX LR			\n\r"
-			".ALIGN 4		\n\r"
+					"LDMIA R0!,{R4-R11} \n\r"
 
-			" FIRSTTASK_		: .word CurrentTaskRunning \n\r"
+					"MSR PSP, R0		\n\r"
 
-	);
+					"isb			\n\r"
+					"BX LR			\n\r"
+					".ALIGN 4		\n\r"
+
+					" FIRSTTASK_		: .word CurrentTaskRunning \n\r"
+			);
+			break;
+
+		case 1:
+			Port_YIELD;
+			asm("nop");
+			break;
+
+		default:
+			break;
+	}
 }
 
 /**

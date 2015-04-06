@@ -173,7 +173,7 @@ _list_del(	list_head_s* prev,
 #if VALIDATION_LIST_LINEAIRE
 
 	unsigned char
-	VALIDATION_list_linear()
+	VALIDATION_list_linear_add()
 	{
 		list_head_s list1, list2, list3, list4, list5, list0;
 
@@ -210,7 +210,7 @@ _list_del(	list_head_s* prev,
 #if VALIDATION_LIST_CIRULAIR
 
 	unsigned char
-	VALIDATION_list_circular()
+	VALIDATION_list_circular_add()
 	{
 		list_head_s list1, list2, list3, list4, list5, list0;
 
@@ -240,6 +240,28 @@ _list_del(	list_head_s* prev,
 				&&	list4.prev == &list3
 				&&	list5.next == &list0
 				&&	list5.prev == &list4	);
+	}
+
+	unsigned char
+	VALIDATION_list_circular_del()
+	{
+		list_head_s test0, test1, test2, test3;
+
+		LISTCIRCULAR_HEAD_INIT(&test0);
+		LISTCIRCULAR_HEAD_INIT(&test1);
+		LISTCIRCULAR_HEAD_INIT(&test2);
+		LISTCIRCULAR_HEAD_INIT(&test3);
+
+		list_add(&test1, &test0);
+		list_add(&test2, &test1);
+		list_add(&test3, &test2);
+		list_del(&test2);
+		list_del(&test1);
+		list_del(&test3);
+
+
+
+		return(test0.next == &test0 && test0.prev == &test0);
 	}
 
 #endif /** VALIDATION_LIST_CIRULAIR */
