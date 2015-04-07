@@ -88,26 +88,79 @@ Timer_Create(	unsigned long	 Value_ms,
 void
 Timer_Start(Timer_s* pTimer)
 {
+	Timer_s* _pCurrentTimer;
+
 	// TODO: assert param
 	if(!pTimer)
 		return;
 
-	if(!pTimer->Status)	{
+	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
+	pTimer->Start_Value_ms 	= msTicks;
+
+	//--------- If the Timer isn't running
+	if(!pTimer->Status)
+	{
 
 		pTimer->Status = STATUS_ENCOURS;
 
-		if(!pFirstTimer) {
+		// No other timer, so this is our new pFirstTimer
+		if(!pFirstTimer)
+		{
 			pFirstTimer = pTimer;
 			LISTLINEAR_HEAD_INIT(pFirstTimer);
-		} else {
+		}
+
+		// We place the Timer in the right position if ther are others
+		else
+		{
 			LISTLINEAR_HEAD_INIT(pTimer);
-			list_add(pTimer, pFirstTimer);
+
+			// Get to the right position
+			for(_pCurrentTimer = pFirstTimer;
+					List_GetNext(Timer_s, _pCurrentTimer)
+				&& 	pTimer->Stop_Value_ms > _pCurrentTimer->Stop_Value_ms;
+				_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+
+			// Add the timer
+			list_add(pTimer, _pCurrentTimer);
 
 		}
 	}
 
-	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
-	pTimer->Start_Value_ms 	= msTicks;
+	//--------- We adjust the timer's position in the list if it is running
+	else
+	{
+		// Get to the right position
+		for(_pCurrentTimer = pTimer;
+				List_GetNext(Timer_s, _pCurrentTimer)
+			&& 	pTimer->Stop_Value_ms > _pCurrentTimer->Stop_Value_ms;
+			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+
+		if(_pCurrentTimer == pTimer)
+			return;
+
+		// If it's the first timer
+		if(pTimer == pFirstTimer && (List_GetNext(Timer_s, pTimer) != NULL))
+		{
+			pFirstTimer = List_GetNext(Timer_s, pTimer);
+
+			// Delete the timer
+			list_del(pTimer);
+
+			// Add the timer
+			list_add(pTimer, _pCurrentTimer);
+
+		}
+
+		else if(pTimer != pFirstTimer)
+		{
+			// Delete the timer
+			list_del(pTimer);
+
+			// Add the timer
+			list_add(pTimer, _pCurrentTimer);
+		}
+	}
 }
 
 /**
@@ -231,8 +284,8 @@ Timer_Tick()
 			}
 
 			else
+				Timer_Start(pCurrentTimer);
 
-				pCurrentTimer->Stop_Value_ms = msTicks + pCurrentTimer->CountValue_ms;
 
 
 			// Execute Timer's callback
