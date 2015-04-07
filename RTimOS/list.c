@@ -118,6 +118,18 @@ ListLinear_add_start( 	void* const pNewEntry,
 }
 
 /**
+ * @brief 	add an entry between two others
+ * @param	pHead_Linear	Pointer to a list
+ * @retval	1 si un seul element, 0 sinon
+ */
+inline unsigned char
+List_IsEmpty(void* pHead)
+{
+	return (List_GetNext(list_head_s, pHead) == List_GetPrev(list_head_s, pHead));
+}
+
+
+/**
    ******************************************************************************
  * Private function definition
  *

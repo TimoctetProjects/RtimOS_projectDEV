@@ -72,13 +72,17 @@ typedef struct _list_head_s {
  *
  */
 /** For both circular & linear linked lists */
+inline unsigned char List_IsEmpty	(void* pHead_Circular);
 inline void list_add_tail	(void* pNewEntry, void* pHead);
 inline void list_add		(void* pNewEntry, void* pHead);
 inline void list_del		(void* pDoomedEntry);
 
+
 /** For linear list */
+inline unsigned char ListLinear_IsEmpty		(void* pHead_Linear);
 void ListLinear_add_end		(void* pNewEntry, void* _pHead);
 void ListLinear_add_start	(void* const pNewEntry, void* const _pHead);
+
 
 
 /** Validation */
