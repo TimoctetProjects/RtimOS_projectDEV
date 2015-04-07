@@ -256,6 +256,7 @@ Timer_GetTickCount()
 inline void
 Timer_Tick()
 {
+	unsigned char done = 0;
 	Timer_s* pCurrentTimer;
 
 	if(msTicks == TAILLE_TSW_32_bits) {
@@ -265,16 +266,16 @@ Timer_Tick()
 	if(!pFirstTimer)
 		return;
 
-	// Look over the entire list
-	for(pCurrentTimer = pFirstTimer;
-		pCurrentTimer;
-		pCurrentTimer = List_GetNext(Timer_s, pCurrentTimer))
+	// TODO: Timer liste circulaire
+
+	for(	pCurrentTimer = pFirstTimer;
+			!done || (List_GetNext(Timer_s, pCurrentTimer) != NULL);
+			pCurrentTimer = List_GetNext(Timer_s, pCurrentTimer))
 	{
-		if(pCurrentTimer->Stop_Value_ms <= msTicks && pCurrentTimer->Status) {
-
-
-			if(!pCurrentTimer->NeverEnding) {
-
+		if(pCurrentTimer->Stop_Value_ms <= msTicks && pCurrentTimer->Status)
+		{
+			if(!pCurrentTimer->NeverEnding)
+			{
 				// Set status to finish
 				pCurrentTimer->Status = STATUS_FINIS;
 
@@ -286,11 +287,39 @@ Timer_Tick()
 			else
 				Timer_Start(pCurrentTimer);
 
-
-
-			// Execute Timer's callback
 			if(pCurrentTimer->CallBackFunction)
 				((pFunctionTimer_t)(pCurrentTimer->CallBackFunction))(pCurrentTimer->pParameter);
 		}
+
+		else	done = 1;
 	}
+
+	// Look over the entire list
+//	for(pCurrentTimer = pFirstTimer;
+//		pCurrentTimer;
+//		pCurrentTimer = List_GetNext(Timer_s, pCurrentTimer))
+//	{
+//		if(pCurrentTimer->Stop_Value_ms <= msTicks && pCurrentTimer->Status) {
+//
+//
+//			if(!pCurrentTimer->NeverEnding) {
+//
+//				// Set status to finish
+//				pCurrentTimer->Status = STATUS_FINIS;
+//
+//				// Suppres Timer from list
+//				list_del(pCurrentTimer);
+//				LISTLINEAR_HEAD_INIT(pCurrentTimer);
+//			}
+//
+//			else
+//				Timer_Start(pCurrentTimer);
+//
+//
+//
+//			// Execute Timer's callback
+//			if(pCurrentTimer->CallBackFunction)
+//				((pFunctionTimer_t)(pCurrentTimer->CallBackFunction))(pCurrentTimer->pParameter);
+//		}
+//	}
 }
