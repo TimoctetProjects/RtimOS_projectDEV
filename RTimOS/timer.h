@@ -25,6 +25,7 @@
  * Exported type definition
  *
  */
+/** @brief	Timer structure */
 typedef struct {
 
 	list_head_s		list;			/** Double linked list*/
@@ -44,6 +45,9 @@ typedef struct {
 
 }Timer_s;
 
+/** @brief 	Pointeur de fonction pour les callback des timers */
+typedef void (*pFunctionTimer_t)(void* pParam);
+
 /**
  ******************************************************************************
  * Exported Macros
@@ -60,7 +64,7 @@ typedef struct {
  * Exported Function prototype
  *
  */
-Timer_s* Timer_Create(unsigned long	Value_ms, unsigned long pCallBack, void* pParam, unsigned char	AutoRestart);
+Timer_s* Timer_Create(unsigned long	Value_ms, pFunctionTimer_t pCallBack, void* pParam, unsigned char	AutoRestart);
 void Timer_Start(Timer_s* pTimer);
 unsigned long Timer_Stop(Timer_s* pTimer);
 

@@ -31,8 +31,6 @@
  * Private type definition
  *
  */
-/** @brief Pointeur de fonction pour les callback des timers */
-typedef void (*pFunctionTimer)(void* pParam);
 
 /**
  ******************************************************************************
@@ -63,10 +61,10 @@ static Timer_s*		 pFirstTimer;
   * @retval	Newly created Timer's adress
   */
 Timer_s*
-Timer_Create(	unsigned long	Value_ms,
-				unsigned long	CallBack,
-				void*			pParam,
-				unsigned char	AutoRestart	)
+Timer_Create(	unsigned long	 Value_ms,
+				pFunctionTimer_t CallBack,
+				void*			 pParam,
+				unsigned char	 AutoRestart	)
 {
 	// TODO: assert param
 
@@ -75,7 +73,7 @@ Timer_Create(	unsigned long	Value_ms,
 		return pNewTimer;
 	mem_ClearZone(pNewTimer, sizeof(Timer_s));
 
-	pNewTimer->CallBackFunction = CallBack;
+	pNewTimer->CallBackFunction = (unsigned long)CallBack;
 	pNewTimer->CountValue_ms 	= Value_ms;
 	pNewTimer->pParameter		= pParam;
 	pNewTimer->NeverEnding		= AutoRestart;
@@ -239,7 +237,7 @@ Timer_Tick()
 
 			// Execute Timer's callback
 			if(pCurrentTimer->CallBackFunction)
-				((pFunctionTimer)(pCurrentTimer->CallBackFunction))(pCurrentTimer->pParameter);
+				((pFunctionTimer_t)(pCurrentTimer->CallBackFunction))(pCurrentTimer->pParameter);
 		}
 	}
 }
