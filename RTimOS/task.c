@@ -122,7 +122,7 @@ initTimOS()
 
 	// Return FAIL if nos task can be loaded
 	if(!CurrentTaskRunning)
-		return FAIL;
+		CurrentTaskRunning = &TaskIDLE;
 
 	// Creation de la tache IDLE
 	TaskIDLE.pStack = (Rui32*)malloc(128 * sizeof(Rui32));
