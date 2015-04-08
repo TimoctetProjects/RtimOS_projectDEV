@@ -44,7 +44,7 @@
  *
  */
 static unsigned long msTicks;
-static Timer_s*		 pFirstTimer;
+static Timer_s*	pFirstTimer;
 
 /**
  ******************************************************************************
@@ -94,6 +94,110 @@ Timer_Start(Timer_s* pTimer)
 	if(!pTimer)
 		return;
 
+//	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
+//	pTimer->Start_Value_ms 	= msTicks;
+//
+//	//--------- If the Timer isn't running
+//	if(!pTimer->Status)
+//	{
+//
+//		pTimer->Status = STATUS_ENCOURS;
+//
+//		// No other timer, so this is our new pFirstTimer
+//		if(!pFirstTimer)
+//		{
+//			pFirstTimer = pTimer;
+//			LISTCIRCULAR_HEAD_INIT(pFirstTimer);
+//		}
+//
+//		// We place the Timer in the right position if ther are others
+//		else
+//		{
+//			LISTCIRCULAR_HEAD_INIT(pTimer);
+//
+//			// Get to the right position
+//			for(_pCurrentTimer = pFirstTimer;
+//				List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms > _pCurrentTimer->Stop_Value_ms
+//				&& 	pTimer->Stop_Value_ms > _pCurrentTimer->Stop_Value_ms;
+//				_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+//
+//			// Add the timer
+//			list_add(pTimer, _pCurrentTimer);
+//
+//		}
+//	}
+//
+//	//--------- We adjust the timer's position in the list if it is running
+//	else
+//	{
+//		// Get to the right position
+//		for(_pCurrentTimer = pTimer;
+//			List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms < _pCurrentTimer->Stop_Value_ms;
+//			//&& 	pTimer->Stop_Value_ms >= _pCurrentTimer->Stop_Value_ms;
+//			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+//
+//		// If they're the same, then we already are at a good position
+//		if(_pCurrentTimer == pTimer)
+//			return;
+//
+//
+//		//------------------ Gestion des pointeurs HAL Timer
+//		// Si on doit changer la position du timer
+//		// Mais qu'un pointeur etait dessus
+//		if(pTimer == pFirstTimer)
+//		{
+//			Timer_s* ASUP = pFirstTimer;
+//
+//			// TODO: A factoriser
+//			// UpdatepFirstTimer
+//			//----------- Gestion du premier pointeur de la liste pFirstTimer
+//			// Si c'est le seul element
+//			//if(List_GetNext(Timer_s, pTimer) == pTimer)
+//			if(List_GetNext(Timer_s, pTimer) == List_GetPrev(Timer_s, pTimer))
+//				pFirstTimer = NULL;
+//
+//			// Sinon on fait pointer sur l'element suivant
+//			else
+//				pFirstTimer = List_GetNext(Timer_s, pTimer);
+//
+//			if(pCurrentTimer == ASUP)
+//				pCurrentTimer = pFirstTimer;
+//
+//			// A ce stade, on l'ajoutera forcement apres le premiere timer
+//			// Tant que pFirstTimer pointe bien sur le premier element
+//		}
+//
+//		// Si c'est le timer courrement pointe (prochain traite dans l'IRQ)
+//		else if(pTimer == pCurrentTimer)
+//		{
+//			// Si c'est le dernier element
+//			// TODO: A factoriser dans une foncton
+//			// Timer_liste_IsLastElement
+//
+//			// Si c'est le dernier element
+//			if(pTimer->Stop_Value_ms < List_GetNext(Timer_s, pTimer)->Stop_Value_ms)
+//				pCurrentTimer = List_GetPrev(Timer_s, pTimer);
+//
+//			// Si c'est le premier element c'est deja gere
+//
+//			// Donc sinon
+//			else
+//				pCurrentTimer = List_GetNext(Timer_s, pTimer);
+//
+//		}
+//
+//		// Si c'est le dernier element
+////		else if(pTimer->Stop_Value_ms > List_GetNext(Timer_s, pTimer)->Stop_Value_ms)
+////						pFirstTimer = List_GetPrev(Timer_s, pTimer);
+//
+//		//----------- Replacement dans la liste
+//		// Delete the timer from list
+//		list_del(pTimer);
+//
+//		// Add the timer to the new position in list
+//		list_add(pTimer, _pCurrentTimer);
+//	}
+
 	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
 	pTimer->Start_Value_ms 	= msTicks;
 
@@ -127,19 +231,26 @@ Timer_Start(Timer_s* pTimer)
 		}
 	}
 
+	// TODO: Factoriser : créer TSW_RestartTimer (appelée dans TSW_satart s'il est en cours
+	// Pareil avec le TSW_start, en faire une prive qui le demarre from scratch
 	//--------- We adjust the timer's position in the list if it is running
 	else
 	{
 		// Get to the right position
 		for(_pCurrentTimer = pTimer;
+				List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
+			&&	_pCurrentTimer != NULL;
+			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+
+	/*	for(_pCurrentTimer = pTimer;
 				List_GetNext(Timer_s, _pCurrentTimer)
 			&& 	pTimer->Stop_Value_ms > _pCurrentTimer->Stop_Value_ms;
-			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);*/
 
 		if(_pCurrentTimer == pTimer)
 			return;
 
-		// If it's the first timer
+		// If it's the first timer ans there is a next
 		if(pTimer == pFirstTimer && (List_GetNext(Timer_s, pTimer) != NULL))
 		{
 			pFirstTimer = List_GetNext(Timer_s, pTimer);
@@ -151,6 +262,13 @@ Timer_Start(Timer_s* pTimer)
 			list_add(pTimer, _pCurrentTimer);
 
 		}
+
+		// If it's the first timer and ther is no next
+//		else if(pTimer == pFirstTimer && (List_GetNext(Timer_s, pTimer) == NULL))
+//		{
+//			// Pcurrent position would be the same as pTimer as there would be no other one
+//			// So unreachable
+//		}
 
 		else if(pTimer != pFirstTimer)
 		{
@@ -249,6 +367,15 @@ Timer_GetTickCount()
 	return msTicks;
 }
 
+
+// TODO: Deplacer dans config
+#define TIMER_CHECK_FOR_LIST_INTEGRITY	1
+
+// TODO: Deplacer la haut dans PRIVATE FUNCTION PROTOTYPE
+#if TIMER_CHECK_FOR_LIST_INTEGRITY
+	unsigned char IsTimerList_OK(Timer_s* pFirst);
+#endif /** TIMER_CHECK_FOR_LIST_INTEGRITY */
+
 /**
   * @brief  Demarrer le timer
   * @param	pTimer	Adresse du timer
@@ -257,7 +384,6 @@ inline void
 Timer_Tick()
 {
 	unsigned char done = 0;
-	Timer_s* pCurrentTimer;
 
 	if(msTicks == TAILLE_TSW_32_bits) {
 			msTicks=0;
@@ -266,60 +392,126 @@ Timer_Tick()
 	if(!pFirstTimer)
 		return;
 
-	// TODO: Timer liste circulaire
+//	if(!pCurrentTimer)
+//		pCurrentTimer = pFirstTimer;
 
-	for(	pCurrentTimer = pFirstTimer;
-			!done || (List_GetNext(Timer_s, pCurrentTimer) != NULL);
-			pCurrentTimer = List_GetNext(Timer_s, pCurrentTimer))
-	{
-		if(pCurrentTimer->Stop_Value_ms <= msTicks && pCurrentTimer->Status)
-		{
-			if(!pCurrentTimer->NeverEnding)
-			{
-				// Set status to finish
-				pCurrentTimer->Status = STATUS_FINIS;
-
-				// Suppres Timer from list
-				list_del(pCurrentTimer);
-				LISTLINEAR_HEAD_INIT(pCurrentTimer);
-			}
-
-			else
-				Timer_Start(pCurrentTimer);
-
-			if(pCurrentTimer->CallBackFunction)
-				((pFunctionTimer_t)(pCurrentTimer->CallBackFunction))(pCurrentTimer->pParameter);
-		}
-
-		else	done = 1;
-	}
-
-	// Look over the entire list
-//	for(pCurrentTimer = pFirstTimer;
-//		pCurrentTimer;
-//		pCurrentTimer = List_GetNext(Timer_s, pCurrentTimer))
+//	while( !done )
+//
 //	{
-//		if(pCurrentTimer->Stop_Value_ms <= msTicks && pCurrentTimer->Status) {
+//		if(pCurrentTimer->Stop_Value_ms <= msTicks && pCurrentTimer->Status)
+//		{
+//			if(!pCurrentTimer->NeverEnding)
+//			{
+//				Timer_s* _pCurrentTimer = pCurrentTimer;
 //
+//				_pCurrentTimer->Status = STATUS_FINIS;
 //
-//			if(!pCurrentTimer->NeverEnding) {
+//				// Si le timer est fini et doit etre supprime
+//				if(List_GetNext(Timer_s, pCurrentTimer) != List_GetPrev(Timer_s, pCurrentTimer))
+//				{
+//					if(pCurrentTimer->Stop_Value_ms > List_GetNext(Timer_s, pCurrentTimer)->Stop_Value_ms)
+//						pCurrentTimer = List_GetPrev(Timer_s, pCurrentTimer);
+//					else
+//						pCurrentTimer = List_GetNext(Timer_s, pCurrentTimer);
 //
-//				// Set status to finish
-//				pCurrentTimer->Status = STATUS_FINIS;
+//					list_del(_pCurrentTimer);
+//					LISTLINEAR_HEAD_INIT(_pCurrentTimer);
+//				}
 //
-//				// Suppres Timer from list
-//				list_del(pCurrentTimer);
-//				LISTLINEAR_HEAD_INIT(pCurrentTimer);
+//				// Si c'est le seul timer
+//				else
+//				{
+//					pCurrentTimer = NULL;
+//					LISTLINEAR_HEAD_INIT(_pCurrentTimer);
+//					done = 1;
+//				}
 //			}
 //
 //			else
 //				Timer_Start(pCurrentTimer);
 //
-//
-//
-//			// Execute Timer's callback
 //			if(pCurrentTimer->CallBackFunction)
 //				((pFunctionTimer_t)(pCurrentTimer->CallBackFunction))(pCurrentTimer->pParameter);
+//
+//			//pCurrentTimer = List_GetNext(Timer_s, pCurrentTimer);
 //		}
+//
+//		else	done = 1;
 //	}
+
+	//Timer_s* pOldFirstTimer = pFirstTimer;
+
+	if(msTicks == 450) {
+		asm volatile("nop \n\r");
+	}
+
+	if(msTicks == 500) {
+		asm volatile("nop \n\r");
+	}
+
+	while(!done)
+	{
+		if(pFirstTimer->Stop_Value_ms <= msTicks && pFirstTimer->Status) {
+
+			// Execute Timer's callback
+			if(pFirstTimer->CallBackFunction)
+				((pFunctionTimer_t)(pFirstTimer->CallBackFunction))(pFirstTimer->pParameter);
+
+			if(!pFirstTimer->NeverEnding)
+			{
+				Timer_s* pOldFirstTimer = pFirstTimer;
+
+				// Set status to finish
+				pOldFirstTimer->Status = STATUS_FINIS;
+
+				if(List_GetNext(Timer_s, pOldFirstTimer) != NULL)
+					pFirstTimer = List_GetNext(Timer_s, pOldFirstTimer);
+				else
+					pFirstTimer = NULL;
+
+				// Suppres Timer from list
+				list_del(pOldFirstTimer);
+				LISTLINEAR_HEAD_INIT(pOldFirstTimer);
+
+			}
+
+			else
+				Timer_Start(pFirstTimer);
+
+			/*if(pOldPosition != pFirstTimer)
+				pFirstTimer = List_GetNext(Timer_s, pFirstTimer);*/
+		}
+
+		else 	done = 1;
+	}
+
+	#if TIMER_CHECK_FOR_LIST_INTEGRITY
+		if(!IsTimerList_OK(pFirstTimer))
+			asm volatile("nop \n\r");	// TODO: Launche a high priority task related to the define TIMER_CHECK_FOR_LIST_INTEGRITY handling this error
+										// Maybe re-arrange the list, that would be awesome ! (just for the algorythm)
+										// And maybe put two level, on where we just assert, another where we re-arrange the list
+										// And if we can't, we while(1)
+	#endif /** TIMER_CHECK_FOR_LIST_INTEGRITY */
 }
+
+
+
+#if TIMER_CHECK_FOR_LIST_INTEGRITY
+
+	unsigned char
+	IsTimerList_OK(Timer_s* pFirst)
+	{
+		while(List_GetNext(Timer_s, pFirst) != NULL)
+		{
+			if(pFirst->Stop_Value_ms > List_GetNext(Timer_s, pFirst)->Stop_Value_ms)
+			{
+				return 0;
+			}
+
+			pFirst = List_GetNext(Timer_s, pFirst);
+		}
+
+		return 1;
+	}
+
+#endif /** TIMER_CHECK_FOR_LIST_INTEGRITY */
