@@ -63,15 +63,15 @@ main()
 //	TestTask[2] = Task_Create(128, (unsigned long)task, &Leds[2]);
 //	TestTask[3] = Task_Create(128, (unsigned long)task, &Leds[3]);
 
-//	TestTimer[0] = Timer_Create(100, TimerCallback_led, &Leds[0], 1);
-//	TestTimer[1] = Timer_Create(150, TimerCallback_led, &Leds[1], 1);
-//	TestTimer[2] = Timer_Create(500,TimerCallback_led, &Leds[2], 1);
-//	TestTimer[3] = Timer_Create(620,TimerCallback_led, &Leds[3], 1);
-//
-	TestTimer[0] = Timer_Create(100, TimerCallback_led, &Leds[0], 1);
-	TestTimer[1] = Timer_Create(500, TimerCallback_led, &Leds[1], 1);
-	TestTimer[2] = Timer_Create(1000,TimerCallback_led, &Leds[2], 1);
+	TestTimer[0] = Timer_Create(700, TimerCallback_led, &Leds[0], 1);
+	TestTimer[1] = Timer_Create(100, TimerCallback_led, &Leds[1], 1);
+	TestTimer[2] = Timer_Create(500,TimerCallback_led, &Leds[2], 1);
 	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
+
+//	TestTimer[0] = Timer_Create(100, TimerCallback_led, &Leds[0], 1);
+//	TestTimer[1] = Timer_Create(500, TimerCallback_led, &Leds[1], 1);
+//	TestTimer[2] = Timer_Create(1000,TimerCallback_led, &Leds[2], 1);
+//	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
 
 	Timer_Start(TestTimer[0]);
 	Timer_Start(TestTimer[1]);

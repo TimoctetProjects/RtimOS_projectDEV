@@ -211,14 +211,6 @@ Timer_Tick()
 	if(!pFirstTimer)
 		return;
 
-	if(msTicks == 450) {
-		asm volatile("nop \n\r");
-	}
-
-	if(msTicks == 500) {
-		asm volatile("nop \n\r");
-	}
-
 	while(!done)
 	{
 		if(pFirstTimer->Stop_Value_ms <= msTicks && pFirstTimer->Status) {
@@ -279,26 +271,33 @@ _timer_start(Timer_s* pTimer)
 	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
 	pTimer->Start_Value_ms 	= msTicks;
 
+	LISTLINEAR_HEAD_INIT(pTimer);
+
 	// No other timer, so this is our new pFirstTimer
 	if(!pFirstTimer)
-	{
 		pFirstTimer = pTimer;
-		LISTLINEAR_HEAD_INIT(pFirstTimer);
-	}
+
 
 	// We place the Timer in the right position if ther are others
 	else
 	{
-		LISTLINEAR_HEAD_INIT(pTimer);
+		if(pFirstTimer->Stop_Value_ms > pTimer->Stop_Value_ms)
+		{
+			list_add_tail(pTimer, pFirstTimer);
+			pFirstTimer = pTimer;
+		}
 
-		// Get to the right position
-		for(_pCurrentTimer = pFirstTimer;
-				List_GetNext(Timer_s, _pCurrentTimer)
-			&& 	pTimer->Stop_Value_ms > _pCurrentTimer->Stop_Value_ms;
-			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+		else
+		{
+			// Get to the right position
+			for(_pCurrentTimer = pFirstTimer;
+					List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
+				&&	_pCurrentTimer != NULL;
+				_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
 
-		// Add the timer
-		list_add(pTimer, _pCurrentTimer);
+			// Add the timer
+			list_add(pTimer, _pCurrentTimer);
+		}
 	}
 }
 
@@ -314,16 +313,26 @@ _timer_restart(Timer_s* pTimer)
 	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
 	pTimer->Start_Value_ms 	= msTicks;
 
-	// Get to the right position
-	for(_pCurrentTimer = pTimer;
-			List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
-		&&	_pCurrentTimer != NULL;
-		_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
-
-	if(_pCurrentTimer == pTimer)
+	if(pFirstTimer->Stop_Value_ms > pTimer->Stop_Value_ms)
+	{
+		list_add_tail(pTimer, pFirstTimer);
+		pFirstTimer = pTimer;
 		return;
+	}
 
-	// If it's the first timer ans there is a next
+	else
+	{
+		// Get to the right position
+		for(_pCurrentTimer = pTimer;
+				List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
+			&&	_pCurrentTimer != NULL;
+			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+
+		if(_pCurrentTimer == pTimer)
+			return;
+	}
+
+	// If it's the first timer and there is a next
 	if(pTimer == pFirstTimer && (List_GetNext(Timer_s, pTimer) != NULL))
 	{
 		pFirstTimer = List_GetNext(Timer_s, pTimer);
@@ -333,13 +342,14 @@ _timer_restart(Timer_s* pTimer)
 
 		// Add the timer
 		list_add(pTimer, _pCurrentTimer);
-
 	}
 
 	else if(pTimer != pFirstTimer)
 	{
 		// Delete the timer
 		list_del(pTimer);
+
+		LISTLINEAR_HEAD_INIT(pTimer);
 
 		// Add the timer
 		list_add(pTimer, _pCurrentTimer);
