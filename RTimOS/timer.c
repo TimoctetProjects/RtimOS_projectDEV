@@ -202,7 +202,7 @@ Timer_GetTickCount()
 inline void
 Timer_Tick()
 {
-	unsigned char done = 0;
+//	unsigned char done = 0;
 
 	if(msTicks == TAILLE_TSW_32_bits) {
 			msTicks=0;
@@ -211,8 +211,8 @@ Timer_Tick()
 	if(!pFirstTimer)
 		return;
 
-	while(!done)
-	{
+//	while(!done)
+//	{
 		if(pFirstTimer->Stop_Value_ms <= msTicks && pFirstTimer->Status) {
 
 			// Execute Timer's callback
@@ -241,8 +241,8 @@ Timer_Tick()
 				Timer_Start(pFirstTimer);
 		}
 
-		else 	done = 1;
-	}
+//		else 	done = 1;
+//	}
 
 	#if TIMER_CHECK_FOR_LIST_INTEGRITY
 		if(!IsTimerList_OK(pFirstTimer))

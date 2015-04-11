@@ -75,7 +75,6 @@ main()
 //	TestTimer[2] = Timer_Create(1000,TimerCallback_led, &Leds[2], 1);
 //	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
 
-
 	TestTimer[0] = Timer_Create(700, TimerTest_Semaphore, &Leds[0], 1);
 	TestTimer[1] = Timer_Create(100, TimerTest_Semaphore, &Leds[1], 1);
 	TestTimer[2] = Timer_Create(500, TimerTest_Semaphore, &Leds[2], 1);
@@ -119,6 +118,8 @@ TimerTest_Semaphore(void* _Led)
 	Struct_Led_s* Led = (Struct_Led_s*)_Led;
 	Semaphore_Give(&Led->Sem);
 }
+
+
 
 // ------------------------------------------------------------
 void
