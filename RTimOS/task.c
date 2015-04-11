@@ -69,7 +69,9 @@ static void Task_StackInit(	Task_s*	_Task,
 							Rui32 	StackSize,
 							Rui32 	_ptr_TaskFunction,
 							void*	_TaskArg );
-
+inline void _Task_Del_FromRunningList();
+inline void _Task_Insert_InWaitingList();
+inline void _Task_Insert_ToRunningList(Task_s* pTask);
 
 
 /**
@@ -199,33 +201,8 @@ Task_Create(	Rui32 		StackSize,
 void
 Task_Delay(Rui32 nbTicksToDelay)
 {
-	// Si une seule tache tourne
-	if(List_GetNext(Task_s, CurrentTaskRunning) == CurrentTaskRunning)
-	{
-		NextTaskToRun = &TaskIDLE;
-
-	}
-
-	// Sinon (au moins une autre tache active)
-	else
-	{
-		NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);
-		list_del(CurrentTaskRunning);
-	}
-
-
-	// Ajout a la liste waiting
-	LISTLINEAR_HEAD_INIT(CurrentTaskRunning);
-
-	if(!pFirstTaskWaiting)
-	{
-		pFirstTaskWaiting = CurrentTaskRunning;
-	}
-
-	else
-	{
-		list_add(CurrentTaskRunning, pFirstTaskWaiting);
-	}
+	_Task_Del_FromRunningList();
+	_Task_Insert_InWaitingList();
 
 	CurrentTaskRunning->ResartValue_ticks = SystickCount + nbTicksToDelay;
 
@@ -245,6 +222,34 @@ Task_DelayUntil(	Rui32 PreviousValue_tick,
 
 
 	return;
+}
+
+
+Rui8
+Semaphore_Take(Semaphore_s* Sem)
+{
+	if(Sem->Task)
+		return FAIL;
+
+	Sem->Task = CurrentTaskRunning;
+
+	_Task_Del_FromRunningList();
+
+	__asm volatile("svc 0x01 \n\r");
+
+	return PASS;
+}
+
+Rui8
+Semaphore_Give(Semaphore_s* Sem)
+{
+	if(!Sem->Task)
+		return FAIL;
+
+	_Task_Insert_ToRunningList(Sem->Task);
+	Sem->Task = NULL;
+
+	return PASS;
 }
 
 /**
@@ -325,13 +330,69 @@ static void
 Task_GetNextTask()
 {
 	// If there is more than one task, no need to switch context
-	if(CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next) {
+	if(CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next || NextTaskToRun != CurrentTaskRunning) {
 
 		if(NextTaskToRun == CurrentTaskRunning)
 			NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);
 
 		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 		__ISB();
+	}
+}
+
+/**
+  * @brief  Insert pTask in Running list
+  * @param	pTask	Task's adress to add
+  */
+inline void
+_Task_Insert_ToRunningList(Task_s* pTask)
+{
+	LISTCIRCULAR_HEAD_INIT(pTask);
+
+	// Handle IDLE Task
+	if(CurrentTaskRunning == &TaskIDLE)
+	{
+			NextTaskToRun = pTask;
+			LISTCIRCULAR_HEAD_INIT(&TaskIDLE);
+	}
+
+	else	list_add(pTask, CurrentTaskRunning);
+}
+
+/**
+  * @brief  Suppress Current List from Running list
+  */
+inline void
+_Task_Del_FromRunningList()
+{
+	// Si une seule tache tourne
+	if(List_GetNext(Task_s, CurrentTaskRunning) == CurrentTaskRunning)
+		NextTaskToRun = &TaskIDLE;
+
+	// Sinon (au moins une autre tache active)
+	else
+	{
+		NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);
+		list_del(CurrentTaskRunning);
+	}
+}
+
+/**
+  * @brief Insert Current task running in waiting list
+  */
+inline void
+_Task_Insert_InWaitingList()
+{
+	LISTLINEAR_HEAD_INIT(CurrentTaskRunning);
+
+	if(!pFirstTaskWaiting)
+	{
+		pFirstTaskWaiting = CurrentTaskRunning;
+	}
+
+	else
+	{
+		list_add(CurrentTaskRunning, pFirstTaskWaiting);
 	}
 }
 
@@ -394,8 +455,8 @@ Task_CheckForWaitingTask()
 
 			//-------------- Ajout a la liste running
 			// Si c'est la tache IDLE qui tourne
-			LISTCIRCULAR_HEAD_INIT(_pCurrentTask);
-			list_add(_pCurrentTask, CurrentTaskRunning);
+			_Task_Insert_ToRunningList(_pCurrentTask);
+
 			return;
 		}
 	}

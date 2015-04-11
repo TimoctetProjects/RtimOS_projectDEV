@@ -65,6 +65,13 @@ typedef struct _Task_s{
 
 }Task_s;
 
+/** @brief	Structure d'une semaphore */
+typedef struct {
+
+	Task_s* Task;
+
+}Semaphore_s;
+
 /**
  ******************************************************************************
  * Exported function prototypes
@@ -80,7 +87,8 @@ Task_s* 		Task_Create	(	unsigned long StackSize,
 void Task_Delay(Rui32 TickToWait_ticks);
 Rui32 Task_DelayUntil(Rui32 PreviousValue_tick, Rui32 nbTicksToDelay);
 
-
+Rui8 Semaphore_Give(Semaphore_s* Sem);
+Rui8 Semaphore_Take(Semaphore_s* Sem);
 
 #endif /** TASK_H */
 

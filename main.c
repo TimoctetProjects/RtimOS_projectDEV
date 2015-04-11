@@ -27,9 +27,10 @@
 	sizeof (pTAB) / sizeof *(pTAB)
 
 typedef struct {
-	unsigned long led_ID;
-	unsigned char inverse;
-	unsigned long SystickCount;
+	unsigned long 	led_ID;
+	unsigned char 	inverse;
+	unsigned long 	SystickCount;
+	Semaphore_s		Sem;
 }Struct_Led_s;
 
 Task_s*  TestTask[4];
@@ -37,6 +38,7 @@ Timer_s* TestTimer[4];
 
 void LED_initialize(void); 	// Initialize LED
 void TimerCallback_led(void* _Led);
+void TimerTest_Semaphore(void* _Led);
 void task(void* _Led);
 
 Struct_Led_s Leds[4] = {
@@ -58,20 +60,26 @@ main()
 
 	LED_initialize();
 
-//	TestTask[0] = Task_Create(128, (unsigned long)task, &Leds[0]);
-//	TestTask[1] = Task_Create(128, (unsigned long)task, &Leds[1]);
-//	TestTask[2] = Task_Create(128, (unsigned long)task, &Leds[2]);
-//	TestTask[3] = Task_Create(128, (unsigned long)task, &Leds[3]);
+	TestTask[0] = Task_Create(128, (unsigned long)task, &Leds[0]);
+	TestTask[1] = Task_Create(128, (unsigned long)task, &Leds[1]);
+	TestTask[2] = Task_Create(128, (unsigned long)task, &Leds[2]);
+	TestTask[3] = Task_Create(128, (unsigned long)task, &Leds[3]);
 
-	TestTimer[0] = Timer_Create(700, TimerCallback_led, &Leds[0], 1);
-	TestTimer[1] = Timer_Create(100, TimerCallback_led, &Leds[1], 1);
-	TestTimer[2] = Timer_Create(500,TimerCallback_led, &Leds[2], 1);
-	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
+//	TestTimer[0] = Timer_Create(700, TimerCallback_led, &Leds[0], 1);
+//	TestTimer[1] = Timer_Create(100, TimerCallback_led, &Leds[1], 1);
+//	TestTimer[2] = Timer_Create(500,TimerCallback_led, &Leds[2], 1);
+//	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
 
 //	TestTimer[0] = Timer_Create(100, TimerCallback_led, &Leds[0], 1);
 //	TestTimer[1] = Timer_Create(500, TimerCallback_led, &Leds[1], 1);
 //	TestTimer[2] = Timer_Create(1000,TimerCallback_led, &Leds[2], 1);
 //	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
+
+
+	TestTimer[0] = Timer_Create(700, TimerTest_Semaphore, &Leds[0], 1);
+	TestTimer[1] = Timer_Create(100, TimerTest_Semaphore, &Leds[1], 1);
+	TestTimer[2] = Timer_Create(500, TimerTest_Semaphore, &Leds[2], 1);
+	TestTimer[3] = Timer_Create(2000,TimerTest_Semaphore, &Leds[3], 1);
 
 	Timer_Start(TestTimer[0]);
 	Timer_Start(TestTimer[1]);
@@ -106,6 +114,14 @@ TimerCallback_led(void* _Led)
 
 // ------------------------------------------------------------
 void
+TimerTest_Semaphore(void* _Led)
+{
+	Struct_Led_s* Led = (Struct_Led_s*)_Led;
+	Semaphore_Give(&Led->Sem);
+}
+
+// ------------------------------------------------------------
+void
 task(void* _Led) // Toggle LED #0
 {
 	Struct_Led_s* Led = (Struct_Led_s*)_Led;
@@ -122,7 +138,7 @@ task(void* _Led) // Toggle LED #0
 			Led->inverse++;
 		}
 
-		Task_Delay(Led->SystickCount);
+		Semaphore_Take(&Led->Sem);
 	}
 }
 
