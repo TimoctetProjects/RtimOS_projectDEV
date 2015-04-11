@@ -30,10 +30,9 @@ typedef struct {
 	unsigned long 	led_ID;
 	unsigned char 	inverse;
 	unsigned long 	SystickCount;
-	Semaphore_s		Sem;
+	Task_s*			Task;
 }Struct_Led_s;
 
-Task_s*  TestTask[4];
 Timer_s* TestTimer[4];
 
 void LED_initialize(void); 	// Initialize LED
@@ -60,10 +59,10 @@ main()
 
 	LED_initialize();
 
-	TestTask[0] = Task_Create(128, (unsigned long)task, &Leds[0]);
-	TestTask[1] = Task_Create(128, (unsigned long)task, &Leds[1]);
-	TestTask[2] = Task_Create(128, (unsigned long)task, &Leds[2]);
-	TestTask[3] = Task_Create(128, (unsigned long)task, &Leds[3]);
+	Leds[0].Task = Task_Create(128, (unsigned long)task, &Leds[0]);
+	Leds[1].Task = Task_Create(128, (unsigned long)task, &Leds[1]);
+	Leds[2].Task = Task_Create(128, (unsigned long)task, &Leds[2]);
+	Leds[3].Task = Task_Create(128, (unsigned long)task, &Leds[3]);
 
 //	TestTimer[0] = Timer_Create(700, TimerCallback_led, &Leds[0], 1);
 //	TestTimer[1] = Timer_Create(100, TimerCallback_led, &Leds[1], 1);
@@ -116,9 +115,8 @@ void
 TimerTest_Semaphore(void* _Led)
 {
 	Struct_Led_s* Led = (Struct_Led_s*)_Led;
-	Semaphore_Give(&Led->Sem);
+	Task_Resume(Led->Task);
 }
-
 
 
 // ------------------------------------------------------------
@@ -139,7 +137,7 @@ task(void* _Led) // Toggle LED #0
 			Led->inverse++;
 		}
 
-		Semaphore_Take(&Led->Sem);
+		Task_Suspend();
 	}
 }
 

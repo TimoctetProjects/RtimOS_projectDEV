@@ -27,14 +27,26 @@ __attribute__ ( (always_inline) )
 static inline void
 Port_Disable_irq()
 {
-	asm volatile ("cpsid i");
+	asm volatile ("cpsid i \n\r");
 }
 
 __attribute__ ( (always_inline) )
 static inline void
 Port_Enable_irq()
 {
-	asm volatile ("cpsie i");
+	asm volatile ("cpsie i \n\r");
+}
+
+__attribute__ ( (always_inline) )
+static inline void
+Lauch_SVC_Service(unsigned long ID_Service)
+{
+	__asm volatile (//	"LDR R0, TEST_ \n\r"
+			"LDR R0, [R0] \n\r"
+					"SVC R0 \n\r"		);
+
+				//	"TEST_ : .word  ID_Service \n\r"
+					//	 : : "r" (ID_Service) );
 }
 
 #define Port_YIELD		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk

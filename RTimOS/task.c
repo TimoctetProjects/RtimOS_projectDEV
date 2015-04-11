@@ -18,6 +18,8 @@
 #include "mem.h"
 #include "RtimOS_Config.h"
 #include "stm32f4xx.h"
+#include "RtimOS_portCM4.h"
+
 
 /**
  ******************************************************************************
@@ -58,6 +60,8 @@ void PendSV_Handler(void);
 
 __attribute__ ( ( isr, naked ) )
 void SVC_Handler(void);
+
+void SVC_Handler_C(Rui32* svc_args);
 
 static void Task_GetNextTask();
 inline Rui8 Task_IsWaitOver(Task_s* task);
@@ -142,6 +146,7 @@ initTimOS()
 
 	//LoadFirstTaskContext();
 	__asm volatile("svc 0 \n\r");
+	//Lauch_SVC_Service(SVC_SERVICE_STARTFRISTTASK);
 
 	// Sould not reach here
 	//stop_cpu;
@@ -226,28 +231,20 @@ Task_DelayUntil(	Rui32 PreviousValue_tick,
 
 
 Rui8
-Semaphore_Take(Semaphore_s* Sem)
+Task_Suspend()
 {
-	if(Sem->Task)
-		return FAIL;
-
-	Sem->Task = CurrentTaskRunning;
-
 	_Task_Del_FromRunningList();
-
 	__asm volatile("svc 0x01 \n\r");
-
 	return PASS;
 }
 
 Rui8
-Semaphore_Give(Semaphore_s* Sem)
+Task_Resume(Task_s* pTask)
 {
-	if(!Sem->Task)
+	if(!pTask)	// Check for state
 		return FAIL;
 
-	_Task_Insert_ToRunningList(Sem->Task);
-	Sem->Task = NULL;
+	_Task_Insert_ToRunningList(pTask);
 
 	return PASS;
 }
@@ -498,12 +495,6 @@ Port_Systick_IRQ()
 	Task_CheckForWaitingTask();
 	Task_GetNextTask();
 }
-
-#define SVC_SERVICE_STARTFRISTTASK	0x00
-#define SVC_SERVICE_YIELD			1
-
-
-void SVC_Handler_C(Rui32* svc_args);
 
 void SVC_Handler(void)
 {

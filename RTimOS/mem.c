@@ -34,7 +34,7 @@
  * Private variables
  *
  */
-unsigned char heap[HEAPSIZE_bytes];
+//unsigned char heap[HEAPSIZE_bytes];
 
 /**
    ******************************************************************************
