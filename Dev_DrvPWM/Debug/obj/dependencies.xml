@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dependencies>
+   <includePath signature="/I..\..\..\workspace\RtimOS\cmsis_boot\startup /I..\..\..\workspace\RtimOS\cmsis_boot /I..\..\..\workspace\RtimOS\cmsis_lib\include /I..\..\..\workspace /I..\..\..\workspace\RtimOS /I..\..\..\workspace\RtimOS\cmsis_lib /I..\..\..\workspace\RtimOS\RTimOS /I..\..\..\workspace\RtimOS\cmsis">
+      <source file="..\..\..\cmsis_lib\source\stm32f4xx_gpio.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_gpio.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\list.c" lastModified="14c9a4e0234">
+         <include file="..\..\..\RTimOS\list.h"/>
+         <include file="..\..\..\RTimOS\RtimOS_portCM4.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\RtimOS.c" lastModified="14c38b81d7a">
+      </source>
+      <source file="..\..\..\cmsis_lib\include\stm32f4xx_syscfg.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\timer.h" lastModified="14c9a55c907">
+         <include file="..\..\..\RTimOS\list.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\include\misc.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\source\stm32f4xx_syscfg.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_syscfg.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\source\misc.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\misc.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\mem.h" lastModified="14c6021ebee">
+      </source>
+      <source file="..\..\..\cmsis_lib\source\stm32f4xx_rcc.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\RtimOS_portCM4.h" lastModified="14ca892cf75">
+         <include file="..\..\..\RTimOS\RtimOS_portGCC.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\source\stm32f4xx_pwr.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_pwr.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\mem.c" lastModified="14ca8884734">
+         <include file="..\..\..\RTimOS\mem.h"/>
+         <include file="..\..\..\RTimOS\RtimOS_Config.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\include\stm32f4xx_pwr.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\source\stm32f4xx_adc.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_adc.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\RtimOS_portGCC.h" lastModified="14c839f150a">
+      </source>
+      <source file="..\..\..\cmsis_lib\include\stm32f4xx_adc.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\cmsis\core_cmFunc.h" lastModified="14aedb00ae8">
+      </source>
+      <source file="..\..\..\cmsis\core_cm4_simd.h" lastModified="14aedb00ae8">
+      </source>
+      <source file="..\..\..\RTimOS\task.h" lastModified="14ca881e14d">
+         <include file="..\..\..\RTimOS\list.h"/>
+         <include file="..\..\..\RTimOS\timer.h"/>
+         <include file="..\..\..\RTimOS\RtimOS_portCM4.h"/>
+      </source>
+      <source file="..\..\..\cmsis_boot\startup\startup_constructor.h" lastModified="14b359076b8">
+      </source>
+      <source file="..\..\..\cmsis_boot\stm32f4xx.h" lastModified="14aedb00ae8">
+         <include file="..\..\..\cmsis\core_cm4.h"/>
+         <include file="..\..\..\cmsis_boot\system_stm32f4xx.h"/>
+         <include file="..\..\..\cmsis_boot\stm32f4xx_conf.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\task.c" lastModified="14d0ef23d5a">
+         <include file="..\..\..\RTimOS\task.h"/>
+         <include file="..\..\..\RTimOS\mem.h"/>
+         <include file="..\..\..\RTimOS\RtimOS_Config.h"/>
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+         <include file="..\..\..\RTimOS\RtimOS_portCM4.h"/>
+      </source>
+      <source file="..\..\..\cmsis_boot\startup\startup_constructor.c" lastModified="14b2fe0f170">
+         <include file="..\..\..\cmsis_boot\startup\startup_constructor.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\RtimOS_Config.h" lastModified="14ca887c85a">
+      </source>
+      <source file="..\..\..\stdio\printf.c" lastModified="14c0da51cf6">
+      </source>
+      <source file="..\..\..\cmsis_lib\include\stm32f4xx_gpio.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\syscalls\syscalls.c" lastModified="14aedb016a0">
+      </source>
+      <source file="..\..\..\cmsis_boot\stm32f4xx_conf.h" lastModified="14aedb03db0">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_adc.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_gpio.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_pwr.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_syscfg.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_tim.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_usart.h"/>
+         <include file="..\..\..\cmsis_lib\include\misc.h"/>
+      </source>
+      <source file="..\..\..\cmsis\core_cmInstr.h" lastModified="14aedb00ae8">
+      </source>
+      <source file="..\..\..\main.c" lastModified="14d0eef0bfe">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+         <include file="..\..\..\RTimOS\task.h"/>
+         <include file="..\..\..\RTimOS\timer.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\include\stm32f4xx_usart.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\source\stm32f4xx_usart.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_usart.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+      </source>
+      <source file="..\..\..\cmsis\core_cm4.h" lastModified="14aedb00ae8">
+         <include file="..\..\..\cmsis\core_cmInstr.h"/>
+         <include file="..\..\..\cmsis\core_cmFunc.h"/>
+         <include file="..\..\..\cmsis\core_cm4_simd.h"/>
+      </source>
+      <source file="..\..\..\cmsis_boot\system_stm32f4xx.h" lastModified="14aedb00700">
+      </source>
+      <source file="..\..\..\cmsis_lib\source\stm32f4xx_tim.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_tim.h"/>
+         <include file="..\..\..\cmsis_lib\include\stm32f4xx_rcc.h"/>
+      </source>
+      <source file="..\..\..\cmsis_boot\startup\startup_stm32f4xx.c" lastModified="14c67630ba6">
+         <include file="..\..\..\cmsis_boot\startup\startup_constructor.h"/>
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\cmsis_lib\include\stm32f4xx_tim.h" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\cmsis_boot\system_stm32f4xx.c" lastModified="14aedb00700">
+         <include file="..\..\..\cmsis_boot\stm32f4xx.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\list.h" lastModified="14c9a4d7d8a">
+         <include file="..\..\..\RTimOS\RtimOS.h"/>
+      </source>
+      <source file="..\..\..\RTimOS\RtimOS.h" lastModified="14c83baf3c3">
+      </source>
+   </includePath>
+</dependencies>
