@@ -339,7 +339,10 @@ static void
 Task_GetNextTask()
 {
 	// If there is more than one task, no need to switch context
-	if(CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next || NextTaskToRun != CurrentTaskRunning) {
+	if( 	!CurrentTaskRunning
+		&& 	(		CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next
+				|| 	NextTaskToRun != CurrentTaskRunning	)	)
+	{
 
 		if(NextTaskToRun == CurrentTaskRunning)
 			NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);

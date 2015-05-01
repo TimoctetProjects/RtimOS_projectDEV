@@ -202,7 +202,7 @@ Timer_GetTickCount()
 inline void
 Timer_Tick()
 {
-//	unsigned char done = 0;
+	unsigned char done = 0, MoreThanOneTimerTreates = 0;
 
 	if(msTicks == TAILLE_TSW_32_bits) {
 			msTicks=0;
@@ -211,38 +211,40 @@ Timer_Tick()
 	if(!pFirstTimer)
 		return;
 
-//	while(!done)
-//	{
+	while(!done)
+	{
 		if(pFirstTimer->Stop_Value_ms <= msTicks && pFirstTimer->Status) {
+
+			Timer_s* pOldFirstTimer = pFirstTimer;
 
 			// Execute Timer's callback
 			if(pFirstTimer->CallBackFunction)
 				((pFunctionTimer_t)(pFirstTimer->CallBackFunction))(pFirstTimer->pParameter);
 
-			if(!pFirstTimer->NeverEnding)
+			// Set status to finish
+			pOldFirstTimer->Status = STATUS_FINIS;
+
+			if(List_GetNext(Timer_s, pOldFirstTimer) != NULL)
+				pFirstTimer = List_GetNext(Timer_s, pOldFirstTimer);
+			else
+				pFirstTimer = NULL;
+
+			// Suppres Timer from list
+			list_del(pOldFirstTimer);
+			LISTLINEAR_HEAD_INIT(pOldFirstTimer);
+
+			if(pOldFirstTimer->NeverEnding)
 			{
-				Timer_s* pOldFirstTimer = pFirstTimer;
-
-				// Set status to finish
-				pOldFirstTimer->Status = STATUS_FINIS;
-
-				if(List_GetNext(Timer_s, pOldFirstTimer) != NULL)
-					pFirstTimer = List_GetNext(Timer_s, pOldFirstTimer);
-				else
-					pFirstTimer = NULL;
-
-				// Suppres Timer from list
-				list_del(pOldFirstTimer);
-				LISTLINEAR_HEAD_INIT(pOldFirstTimer);
-
+				Timer_Start(pOldFirstTimer);
 			}
 
-			else
-				Timer_Start(pFirstTimer);
+			if(!IsTimerList_OK(pFirstTimer))
+				asm volatile("nop \n\r");
+
 		}
 
-//		else 	done = 1;
-//	}
+		else 	done = 1;
+	}
 
 	#if TIMER_CHECK_FOR_LIST_INTEGRITY
 		if(!IsTimerList_OK(pFirstTimer))
