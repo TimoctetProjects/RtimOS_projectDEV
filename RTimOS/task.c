@@ -93,7 +93,15 @@ static Task_s*	pFirstTaskWaiting;
 
 static Task_s	TaskIDLE;
 
-static Rui32 	SystickCount;
+#define RTIMOS_CHECK_FOR_CPU_USAGE	1
+#if RTIMOS_CHECK_FOR_CPU_USAGE
+	static Rui32	TickInIDLE;
+	static Rui32	TickInTasks;
+	static Rui32*	pSystickCount = &TickInTasks;
+	static Rui32	CpuUsage_pr100;
+#else
+	static Rui32 	SystickCount;
+#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
 
 /**
  ******************************************************************************
@@ -209,7 +217,11 @@ Task_Delay(Rui32 nbTicksToDelay)
 	_Task_Del_FromRunningList();
 	_Task_Insert_InWaitingList();
 
-	CurrentTaskRunning->ResartValue_ticks = SystickCount + nbTicksToDelay;
+	#if	RTIMOS_CHECK_FOR_CPU_USAGE
+		CurrentTaskRunning->ResartValue_ticks = TickInIDLE + TickInTasks + nbTicksToDelay;
+	#else
+		CurrentTaskRunning->ResartValue_ticks = SystickCount + nbTicksToDelay;
+	#endif	/** RTIMOS_CHECK_FOR_CPU_USAGE */
 
 	__asm volatile("svc 0x01 \n\r");
 }
@@ -336,13 +348,6 @@ Task_GetNextTask()
 		__ISB();
 	}
 }
-#define RTIMOS_CHECK_FOR_CPU_USAGE	1
-#if RTIMOS_CHECK_FOR_CPU_USAGE
-	Rui32	TickUntilIDLE;
-	Rui32	CpuUsage_pr100;
-	Rui32*	ppTest = &SystickCount;
-	Rui32	Test;
-#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
 
 /**
   * @brief  Insert pTask in Running list
@@ -360,8 +365,14 @@ _Task_Insert_ToRunningList(Task_s* pTask)
 			LISTCIRCULAR_HEAD_INIT(&TaskIDLE);
 
 			#if RTIMOS_CHECK_FOR_CPU_USAGE
-				ppTest = &SystickCount;
-				CpuUsage_pr100 = Test*100 / SystickCount;
+
+				pSystickCount = &TickInTasks;
+
+				if(!TickInTasks)
+					CpuUsage_pr100 = 0;
+				else
+					CpuUsage_pr100 = TickInIDLE*100 / TickInTasks;
+
 			#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
 	}
 
@@ -380,7 +391,7 @@ _Task_Del_FromRunningList()
 		NextTaskToRun = &TaskIDLE;
 
 		#if RTIMOS_CHECK_FOR_CPU_USAGE
-			ppTest = &Test;
+			pSystickCount = &TickInIDLE;
 		#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
 	}
 
@@ -418,7 +429,12 @@ _Task_Insert_InWaitingList()
 inline Rui32
 getSystickCount()
 {
-	return SystickCount;
+	#if RTIMOS_CHECK_FOR_CPU_USAGE
+		return TickInIDLE + TickInTasks;
+	#else
+		return SystickCount;
+	#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
+
 }
 
 /**
@@ -428,7 +444,11 @@ getSystickCount()
 inline Rui8
 Task_IsWaitOver(Task_s* task)
 {
-	return (task->ResartValue_ticks <= (Test + SystickCount));
+	#if RTIMOS_CHECK_FOR_CPU_USAGE
+		return (task->ResartValue_ticks <= (TickInIDLE + TickInTasks));
+	#else
+		return (task->ResartValue_ticks <= SystickCount);
+	#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
 }
 
 /**
@@ -509,7 +529,13 @@ void
 Port_Systick_IRQ()
 {
 	//SystickCount++;
-	(*ppTest)++;
+
+	#if RTIMOS_CHECK_FOR_CPU_USAGE
+		(*pSystickCount)++;
+	#else
+		SystickCount++;
+	#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
+
 	Timer_Tick();
 	Task_CheckForWaitingTask();
 	Task_GetNextTask();
