@@ -58,26 +58,26 @@ main()
 	SystemCoreClockUpdate();
 
 	LED_initialize();
-
-	Leds[0].Task = Task_Create(128, (unsigned long)task, &Leds[0]);
-	Leds[1].Task = Task_Create(128, (unsigned long)task, &Leds[1]);
-	Leds[2].Task = Task_Create(128, (unsigned long)task, &Leds[2]);
-	Leds[3].Task = Task_Create(128, (unsigned long)task, &Leds[3]);
+//
+//	Leds[0].Task = Task_Create(128, (unsigned long)task, &Leds[0]);
+//	Leds[1].Task = Task_Create(128, (unsigned long)task, &Leds[1]);
+//	Leds[2].Task = Task_Create(128, (unsigned long)task, &Leds[2]);
+//	Leds[3].Task = Task_Create(128, (unsigned long)task, &Leds[3]);
 
 //	TestTimer[0] = Timer_Create(700, TimerCallback_led, &Leds[0], 1);
 //	TestTimer[1] = Timer_Create(100, TimerCallback_led, &Leds[1], 1);
 //	TestTimer[2] = Timer_Create(500,TimerCallback_led, &Leds[2], 1);
 //	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
 
-//	TestTimer[0] = Timer_Create(100, TimerCallback_led, &Leds[0], 1);
-//	TestTimer[1] = Timer_Create(500, TimerCallback_led, &Leds[1], 1);
-//	TestTimer[2] = Timer_Create(1000,TimerCallback_led, &Leds[2], 1);
-//	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
+	TestTimer[0] = Timer_Create(100, TimerCallback_led, &Leds[0], 1);
+	TestTimer[1] = Timer_Create(500, TimerCallback_led, &Leds[1], 1);
+	TestTimer[2] = Timer_Create(1000,TimerCallback_led, &Leds[2], 1);
+	TestTimer[3] = Timer_Create(2000,TimerCallback_led, &Leds[3], 1);
 
-	TestTimer[0] = Timer_Create(700, TimerTest_Semaphore, &Leds[0], 1);
-	TestTimer[1] = Timer_Create(100, TimerTest_Semaphore, &Leds[1], 1);
-	TestTimer[2] = Timer_Create(500, TimerTest_Semaphore, &Leds[2], 1);
-	TestTimer[3] = Timer_Create(2000,TimerTest_Semaphore, &Leds[3], 1);
+//	TestTimer[0] = Timer_Create(700, TimerTest_Semaphore, &Leds[0], 1);
+//	TestTimer[1] = Timer_Create(100, TimerTest_Semaphore, &Leds[1], 1);
+//	TestTimer[2] = Timer_Create(500, TimerTest_Semaphore, &Leds[2], 1);
+//	TestTimer[3] = Timer_Create(2000,TimerTest_Semaphore, &Leds[3], 1);
 
 	Timer_Start(TestTimer[0]);
 	Timer_Start(TestTimer[1]);
@@ -128,12 +128,12 @@ task(void* _Led) // Toggle LED #0
 	while (1) {
 
 		if (Led->inverse) {
-			GPIOD->BSRRL = Led->led_ID;
+			GPIOD->BSRRH = Led->led_ID;
 			Led->inverse--;
 		}
 
 		else {
-			GPIOD->BSRRH = Led->led_ID;
+			GPIOD->BSRRL = Led->led_ID;
 			Led->inverse++;
 		}
 
