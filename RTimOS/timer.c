@@ -202,8 +202,6 @@ Timer_GetTickCount()
 inline void
 Timer_Tick()
 {
-	unsigned char done = 0, MoreThanOneTimerTreates = 0;
-
 	if(msTicks == TAILLE_TSW_32_bits) {
 			msTicks=0;
 	} else 	msTicks++;
@@ -237,10 +235,6 @@ Timer_Tick()
 			{
 				Timer_Start(pOldFirstTimer);
 			}
-
-			if(!IsTimerList_OK(pFirstTimer))
-				asm volatile("nop \n\r");
-
 		}
 
 		else 	done = 1;
