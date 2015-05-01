@@ -202,6 +202,8 @@ Timer_GetTickCount()
 inline void
 Timer_Tick()
 {
+	unsigned char done = 0;
+
 	if(msTicks == TAILLE_TSW_32_bits) {
 			msTicks=0;
 	} else 	msTicks++;
@@ -333,21 +335,15 @@ _timer_restart(Timer_s* pTimer)
 	{
 		pFirstTimer = List_GetNext(Timer_s, pTimer);
 
-		// Delete the timer
 		list_del(pTimer);
-
-		// Add the timer
 		list_add(pTimer, _pCurrentTimer);
 	}
 
 	else if(pTimer != pFirstTimer)
 	{
-		// Delete the timer
 		list_del(pTimer);
 
 		LISTLINEAR_HEAD_INIT(pTimer);
-
-		// Add the timer
 		list_add(pTimer, _pCurrentTimer);
 	}
 }

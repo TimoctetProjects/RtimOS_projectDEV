@@ -80,8 +80,8 @@ Task_s* 		Task_Create	(	unsigned long StackSize,
 void Task_Delay(Rui32 TickToWait_ticks);
 Rui32 Task_DelayUntil(Rui32 PreviousValue_tick, Rui32 nbTicksToDelay);
 
-Rui8 Task_Resume(Task_s* pTask);
-Rui8 Task_Suspend();
+Rui8 Task_Resume_fApp(Task_s* pTask);
+Rui8 Task_Suspend_fApp();
 
 #endif /** TASK_H */
 

@@ -214,14 +214,15 @@ Task_Create(	Rui32 		StackSize,
 void
 Task_Delay(Rui32 nbTicksToDelay)
 {
-	_Task_Del_FromRunningList();
-	_Task_Insert_InWaitingList();
 
 	#if	RTIMOS_CHECK_FOR_CPU_USAGE
 		CurrentTaskRunning->ResartValue_ticks = TickInIDLE + TickInTasks + nbTicksToDelay;
 	#else
 		CurrentTaskRunning->ResartValue_ticks = SystickCount + nbTicksToDelay;
 	#endif	/** RTIMOS_CHECK_FOR_CPU_USAGE */
+
+	_Task_Del_FromRunningList();
+	_Task_Insert_InWaitingList();
 
 	__asm volatile("svc 0x01 \n\r");
 }
@@ -241,17 +242,28 @@ Task_DelayUntil(	Rui32 PreviousValue_tick,
 	return;
 }
 
-
+/**
+  * @brief  Suspend a task until Task_Resume_fApp is called with the task's handle.
+  * 		This functions is called directly from the task, it can't be used to suspend
+  * 		a Task other than oneself.
+  * @note 	The Task that will be suspended will be the Current Task Running.
+  * @retval	PASS
+  */
 Rui8
-Task_Suspend()
+Task_Suspend_fApp()
 {
 	_Task_Del_FromRunningList();
 	__asm volatile("svc 0x01 \n\r");
 	return PASS;
 }
 
+/**
+  * @brief  Resume a task that has previously been suspended.
+  * @param 	pTask	Pointer to the suspended task to be resumed.
+  * @retval	PASS or FAIL
+  */
 Rui8
-Task_Resume(Task_s* pTask)
+Task_Resume_fApp(Task_s* pTask)
 {
 	if(!pTask)	// Check for state
 		return FAIL;
@@ -339,15 +351,15 @@ static void
 Task_GetNextTask()
 {
 	// If there is more than one task, no need to switch context
-	if( 	!CurrentTaskRunning
-		&& 	(		CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next
-				|| 	NextTaskToRun != CurrentTaskRunning	)	)
+	if( 	(CurrentTaskRunning != (Task_s*)CurrentTaskRunning->list.next)
+		|| 	(NextTaskToRun != CurrentTaskRunning) 	)
 	{
 
 		if(NextTaskToRun == CurrentTaskRunning)
 			NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);
 
-		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+		//SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+		Port_YIELD;
 		__ISB();
 	}
 }
@@ -421,7 +433,14 @@ _Task_Insert_InWaitingList()
 
 	else
 	{
-		list_add(CurrentTaskRunning, pFirstTaskWaiting);
+		Task_s* _pCurrentTask;
+
+		for(_pCurrentTask = pFirstTaskWaiting;
+				List_GetNext(Task_s, _pCurrentTask)->ResartValue_ticks <= CurrentTaskRunning->ResartValue_ticks
+			&&	_pCurrentTask != NULL;
+				_pCurrentTask = List_GetNext(Task_s, _pCurrentTask)		);
+
+		list_add(CurrentTaskRunning, _pCurrentTask);
 	}
 }
 
@@ -587,6 +606,7 @@ SVC_Handler_C(Rui32* svc_args)
 
 		case 1:
 			Port_YIELD;
+			//SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 			asm("nop");
 			break;
 
