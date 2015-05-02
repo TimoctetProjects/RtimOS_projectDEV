@@ -268,30 +268,27 @@ _timer_start(Timer_s* pTimer)
 
 	// No other timer, so this is our new pFirstTimer
 	if(!pFirstTimer)
+	{
 		pFirstTimer = pTimer;
-
+		return;
+	}
 
 	// We place the Timer in the right position if ther are others
-	else
+	if(pFirstTimer->Stop_Value_ms > pTimer->Stop_Value_ms)
 	{
-		if(pFirstTimer->Stop_Value_ms > pTimer->Stop_Value_ms)
-		{
-			list_add_tail(pTimer, pFirstTimer);
-			pFirstTimer = pTimer;
-		}
-
-		else
-		{
-			// Get to the right position
-			for(_pCurrentTimer = pFirstTimer;
-					List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
-				&&	_pCurrentTimer != NULL;
-				_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
-
-			// Add the timer
-			list_add(pTimer, _pCurrentTimer);
-		}
+		list_add_tail(pTimer, pFirstTimer);
+		pFirstTimer = pTimer;
+		return;
 	}
+
+	// Get to the right position
+	for(_pCurrentTimer = pFirstTimer;
+			List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
+		&&	_pCurrentTimer != NULL;
+		_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+
+	// Add the timer
+	list_add(pTimer, _pCurrentTimer);
 }
 
 /**
@@ -315,18 +312,15 @@ _timer_restart(Timer_s* pTimer)
 	}
 
 	// Otherwise we'll searsh for the right list's position
-	else
-	{
-		// Get to the right position
-		for(_pCurrentTimer = pTimer;
-				List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
-			&&	_pCurrentTimer != NULL;
-			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
+	// Get to the right position
+	for(_pCurrentTimer = pTimer;
+			List_GetNext(Timer_s, _pCurrentTimer)->Stop_Value_ms <= pTimer->Stop_Value_ms
+		&&	_pCurrentTimer != NULL;
+		_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
 
-		// If the timer remain in the same position
-		if(_pCurrentTimer == pTimer)
-			return;
-	}
+	// If the timer remain in the same position
+	if(_pCurrentTimer == pTimer)
+		return;
 
 	// If it's the first timer and there is a next
 	if(pTimer == pFirstTimer && (List_GetNext(Timer_s, pTimer) != NULL))
@@ -335,20 +329,16 @@ _timer_restart(Timer_s* pTimer)
 
 		list_del(pTimer);
 		list_add(pTimer, _pCurrentTimer);
+		return;
 	}
 
 	// Otherwise if the newly add timer isn't the first
-	else if(pTimer != pFirstTimer)
+	if(pTimer != pFirstTimer)
 	{
 		list_del(pTimer);
 
 		LISTLINEAR_HEAD_INIT(pTimer);
 		list_add(pTimer, _pCurrentTimer);
-	}
-
-	else
-	{
-		// Nothing to do here
 	}
 }
 
