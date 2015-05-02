@@ -495,44 +495,73 @@ Task_IsWaitOver(Task_s* task)
 static void
 Task_CheckForWaitingTask()
 {
-	Task_s* _pCurrentTask;
-
 	if(!pFirstTaskWaiting)
 		return;
 
-	for(	_pCurrentTask = pFirstTaskWaiting;
-			_pCurrentTask;
-			_pCurrentTask = List_GetNext(Task_s, _pCurrentTask)	)
+	if(Task_IsWaitOver(pFirstTaskWaiting))
 	{
-		if(Task_IsWaitOver(_pCurrentTask))
+		Task_s* _pCurrentTask = pFirstTaskWaiting;
+
+		_pCurrentTask->ResartValue_ticks = 0;
+
+		//-------------- Suppresion a la liste waiting
+		// Si c'est le seul de la liste
+		if(!List_GetNext(Task_s, _pCurrentTask) && !List_GetPrev(Task_s, _pCurrentTask))
 		{
-			_pCurrentTask->ResartValue_ticks = 0;
-
-			//-------------- Suppresion a la liste waiting
-			// Si c'est le seul de la liste
-			if(!List_GetNext(Task_s, _pCurrentTask) && !List_GetPrev(Task_s, _pCurrentTask))
-			{
-				pFirstTaskWaiting = NULL;
-			}
-
-			// Sinon (s'il y a d'autres elements)
-			else
-			{
-				if(_pCurrentTask == pFirstTaskWaiting)
-				{
-					pFirstTaskWaiting = List_GetNext(Task_s, _pCurrentTask);
-				}
-
-				list_del(_pCurrentTask);
-			}
-
-			//-------------- Ajout a la liste running
-			// Si c'est la tache IDLE qui tourne
-			_Task_Insert_ToRunningList(_pCurrentTask);
-
-			return;
+			pFirstTaskWaiting = NULL;
 		}
+
+		// Sinon (s'il y a d'autres elements)
+		else
+		{
+			if(_pCurrentTask == pFirstTaskWaiting)
+			{
+				pFirstTaskWaiting = List_GetNext(Task_s, _pCurrentTask);
+			}
+
+			list_del(_pCurrentTask);
+		}
+
+		//-------------- Ajout a la liste running
+		// Si c'est la tache IDLE qui tourne
+		_Task_Insert_ToRunningList(_pCurrentTask);
+		return;
 	}
+
+
+//	for(	_pCurrentTask = pFirstTaskWaiting;
+//			_pCurrentTask;
+//			_pCurrentTask = List_GetNext(Task_s, _pCurrentTask)	)
+//	{
+//		if(Task_IsWaitOver(_pCurrentTask))
+//		{
+//			_pCurrentTask->ResartValue_ticks = 0;
+//
+//			//-------------- Suppresion a la liste waiting
+//			// Si c'est le seul de la liste
+//			if(!List_GetNext(Task_s, _pCurrentTask) && !List_GetPrev(Task_s, _pCurrentTask))
+//			{
+//				pFirstTaskWaiting = NULL;
+//			}
+//
+//			// Sinon (s'il y a d'autres elements)
+//			else
+//			{
+//				if(_pCurrentTask == pFirstTaskWaiting)
+//				{
+//					pFirstTaskWaiting = List_GetNext(Task_s, _pCurrentTask);
+//				}
+//
+//				list_del(_pCurrentTask);
+//			}
+//
+//			//-------------- Ajout a la liste running
+//			// Si c'est la tache IDLE qui tourne
+//			_Task_Insert_ToRunningList(_pCurrentTask);
+//
+//			return;
+//		}
+//	}
 }
 
 /**
