@@ -46,6 +46,7 @@
  */
 static inline void _timer_restart	(Timer_s* pTimer);
 static inline void _timer_start		(Timer_s* pTimer);
+static inline void _timer_remove	(Timer_s* pTimer);
 
 /**
  ******************************************************************************
@@ -224,14 +225,7 @@ Timer_Tick()
 			// Set status to finish
 			pOldFirstTimer->Status = STATUS_FINIS;
 
-			if(List_GetNext(Timer_s, pOldFirstTimer) != NULL)
-				pFirstTimer = List_GetNext(Timer_s, pOldFirstTimer);
-			else
-				pFirstTimer = NULL;
-
-			// Suppres Timer from list
-			list_del(pOldFirstTimer);
-			LISTLINEAR_HEAD_INIT(pOldFirstTimer);
+			_timer_remove(pOldFirstTimer);
 
 			if(pOldFirstTimer->NeverEnding)
 			{
@@ -250,6 +244,7 @@ Timer_Tick()
 										// And if we can't, we while(1)
 	#endif /** TIMER_CHECK_FOR_LIST_INTEGRITY */
 }
+
 
 /**
  ******************************************************************************
@@ -311,6 +306,7 @@ _timer_restart(Timer_s* pTimer)
 	pTimer->Stop_Value_ms 	= msTicks + pTimer->CountValue_ms;
 	pTimer->Start_Value_ms 	= msTicks;
 
+	// Check the timer we want to add shall be the first one
 	if(pFirstTimer->Stop_Value_ms > pTimer->Stop_Value_ms)
 	{
 		list_add_tail(pTimer, pFirstTimer);
@@ -318,6 +314,7 @@ _timer_restart(Timer_s* pTimer)
 		return;
 	}
 
+	// Otherwise we'll searsh for the right list's position
 	else
 	{
 		// Get to the right position
@@ -326,6 +323,7 @@ _timer_restart(Timer_s* pTimer)
 			&&	_pCurrentTimer != NULL;
 			_pCurrentTimer = List_GetNext(Timer_s, _pCurrentTimer)		);
 
+		// If the timer remain in the same position
 		if(_pCurrentTimer == pTimer)
 			return;
 	}
@@ -339,6 +337,7 @@ _timer_restart(Timer_s* pTimer)
 		list_add(pTimer, _pCurrentTimer);
 	}
 
+	// Otherwise if the newly add timer isn't the first
 	else if(pTimer != pFirstTimer)
 	{
 		list_del(pTimer);
@@ -346,9 +345,31 @@ _timer_restart(Timer_s* pTimer)
 		LISTLINEAR_HEAD_INIT(pTimer);
 		list_add(pTimer, _pCurrentTimer);
 	}
+
+	else
+	{
+		// Nothing to do here
+	}
 }
 
 
+/**
+ * @brief	Suppress a Timer from the list.
+ * @param	pTimer		Pointer to the timer to remove
+ */
+static inline void
+_timer_remove(
+		Timer_s* pTimer)
+{
+	if(List_GetNext(Timer_s, pTimer) != NULL)
+		pFirstTimer = List_GetNext(Timer_s, pTimer);
+	else
+		pFirstTimer = NULL;
+
+	// Suppres Timer from list
+	list_del(pTimer);
+	LISTLINEAR_HEAD_INIT(pTimer);
+}
 
 /**
  ******************************************************************************
