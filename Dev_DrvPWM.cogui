@@ -10,7 +10,7 @@
 <perspectiveBar/>
 <page focus="true" label="Workspace - CooCox CoBuilder">
 <editors>
-<editorArea activeWorkbook="DefaultEditorWorkbook">
+<editorArea activeWorkbook="org.eclipse.ui.internal.EditorStack@5513ff">
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
@@ -52,9 +52,9 @@
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/RtimOS_Config.h"/>
 <editorState selectionHorizontalPixel="0" selectionLength="26" selectionOffset="421" selectionTopPixel="0"/>
 </editor>
-<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="timer.c" partName="timer.c" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/timer.c" title="timer.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/timer.c" workbook="DefaultEditorWorkbook">
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="timer.c" partName="timer.c" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/timer.c" title="timer.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/timer.c" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/timer.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7912" selectionTopPixel="4050"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2790" selectionTopPixel="1410"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="timer.h" partName="timer.h" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/timer.h" title="timer.h" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/timer.h" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/timer.h"/>
@@ -72,21 +72,21 @@
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/cmsis/core_cm4.h"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5922" selectionTopPixel="324"/>
 </editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="RtimOS_portCM4.h" partName="RtimOS_portCM4.h" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/RtimOS_portCM4.h" title="RtimOS_portCM4.h" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/RtimOS_portCM4.h" workbook="DefaultEditorWorkbook">
+<editor focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="RtimOS_portCM4.h" partName="RtimOS_portCM4.h" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/RtimOS_portCM4.h" title="RtimOS_portCM4.h" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/RtimOS_portCM4.h" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/RtimOS_portCM4.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="815" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="35" selectionOffset="1117" selectionTopPixel="243"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="task.h" partName="task.h" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/task.h" title="task.h" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/task.h" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/task.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1466" selectionTopPixel="423"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1927" selectionTopPixel="645"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="RtimOS.h" partName="RtimOS.h" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/RtimOS.h" title="RtimOS.h" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/RtimOS.h" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/RtimOS.h"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2272" selectionTopPixel="888"/>
 </editor>
-<editor focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="task.c" partName="task.c" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/task.c" title="task.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/task.c" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="task.c" partName="task.c" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/task.c" title="task.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/task.c" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/task.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="11813" selectionTopPixel="6360"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="6023" selectionTopPixel="2895"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="list.c" partName="list.c" path="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/list.c" title="list.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/RTimOS/list.c" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/list.c"/>
@@ -96,9 +96,9 @@
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/RTimOS/RtimOS_portGCC.h"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="378" selectionTopPixel="0"/>
 </editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="main.c" partName="main.c" path="C:/CooCox/CoIDE/workspace/RtimOS/main.c" title="main.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/main.c" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
+<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="main.c" partName="main.c" path="C:/CooCox/CoIDE/workspace/RtimOS/main.c" title="main.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/main.c" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/main.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1252" selectionTopPixel="615"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2198" selectionTopPixel="1500"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="startup_stm32f4xx.c" partName="startup_stm32f4xx.c" path="C:/CooCox/CoIDE/workspace/RtimOS/cmsis_boot/startup/startup_stm32f4xx.c" title="startup_stm32f4xx.c" tooltip="C:/CooCox/CoIDE/workspace/RtimOS/cmsis_boot/startup/startup_stm32f4xx.c" workbook="org.eclipse.ui.internal.EditorStack@5513ff">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Dev_DrvPWM/cmsis_boot/startup/startup_stm32f4xx.c"/>
@@ -108,7 +108,7 @@
 <views>
 <view id="org.eclipse.debug.ui.ExpressionView" partName="Expressions">
 <viewState>
-<ExpressionKeySet ExpKeys="pFirstTimer,pOldFirstTimer,TestTimer,msTicks,&amp;Leds[0],&amp;Leds[1],&amp;Leds[2],&amp;Leds[3],_Led,"/>
+<ExpressionKeySet ExpKeys="pFirstTaskWaiting,msTicks,Leds[0].Task,Leds[1].Task,Leds[2].Task,Leds[3].Task,CurrentTaskRunning,nbTicksToDelay,NextTaskToRun,(CurrentTaskRunning == &amp;TaskIDLE &amp;&amp; &#x09;NextTaskToRun != &amp;TaskIDLE) ,(NextTaskToRun != CurrentTaskRunning),(CurrentTaskRunning != (Task_s*)CurrentTaskRunning-&gt;list.next),!CurrentTaskRunning,"/>
 </viewState>
 </view>
 <view id="org.eclipse.ui.views.ProgressView" partName="Progress">
@@ -125,7 +125,7 @@
 <element path="/Dev_DrvPWM/syscalls"/>
 </expanded>
 <selection>
-<element path="/Dev_DrvPWM/RTimOS/timer.c"/>
+<element path="/Dev_DrvPWM/main.c"/>
 </selection>
 </viewState>
 </view>
@@ -303,8 +303,8 @@
 <hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 <hide_toolbar_item_id id="org.coocox.builder.ui.build"/>
 <hide_toolbar_item_id id="org.coocox.welcome.ui.action.welcome"/>
-<hide_toolbar_item_id id="org.coocox.component.ui.ShowRepositoryAction"/>
 <hide_toolbar_item_id id="org.coocox.codebugger.configuration.coideProgramDownloadAction"/>
+<hide_toolbar_item_id id="org.coocox.component.ui.ShowRepositoryAction"/>
 <view id="org.eclipse.ui.console.ConsoleView"/>
 <view id="org.eclipse.debug.ui.DebugView"/>
 <view id="org.eclipse.debug.ui.BreakpointView"/>
@@ -333,7 +333,7 @@
 </folder>
 </info>
 <info folder="true" part="org.eclipse.ui.internal.ViewStack@17dcb96" ratio="0.68157613" ratioLeft="640" ratioRight="299" relationship="4" relative="org.eclipse.ui.internal.ViewStack@6074b1">
-<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
+<folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
 <page content="org.eclipse.debug.ui.BreakpointView" label="Breakpoints"/>
@@ -379,160 +379,162 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/RTimOS/timer.c"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/RTimOS/task.c"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/cmsis_boot/startup/startup_stm32f4xx.c"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/main.c"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/cmsis_boot/startup/startup_stm32f4xx.c"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/RTimOS/task.c"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/RTimOS/timer.c"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Dev_DrvPWM/RTimOS/task.h"/>
 </editors>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13119" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="5993" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13135" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="6027" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13165" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="5962" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="9107" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="13316" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="9260" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="13325" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="9365" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12424" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="3483" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="5962" y="0"/>
 </item>
-<item historyLabel="startup_stm32f4xx.c" index="2">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12386" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="1252" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12424" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13024" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12547" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13119" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12592" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13135" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12590" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13165" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12721" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="9107" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12908" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="9423" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12906" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="9114" y="18"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12959" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13024" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="13031" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="13156" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10051" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10108" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10150" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="1252" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10177" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="2834" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10255" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="2879" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10292" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="2900" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10314" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="2931" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10500" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="13205" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="2931" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="13226" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="2985" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="13897" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="3016" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="9591" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="9591" y="0"/>
 </item>
-<item historyLabel="startup_stm32f4xx.c" index="2">
+<item historyLabel="startup_stm32f4xx.c" index="1">
 <position info="not_deleted" x="14559" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="3016" y="0"/>
-</item>
-<item historyLabel="main.c" index="1">
+<item historyLabel="main.c" index="2">
 <position info="not_deleted" x="1252" y="0"/>
 </item>
-<item historyLabel="startup_stm32f4xx.c" index="2">
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="5962" y="0"/>
+</item>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="9591" y="0"/>
+</item>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12590" y="0"/>
+</item>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="9820" y="0"/>
+</item>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="5962" y="0"/>
+</item>
+<item historyLabel="task.c" index="0">
+<position/>
+</item>
+<item historyLabel="startup_stm32f4xx.c" index="3">
 <position info="not_deleted" x="14559" y="0"/>
 </item>
-<item historyLabel="main.c" index="1">
+<item historyLabel="main.c" index="2">
 <position info="not_deleted" x="1252" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="5962" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="12590" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="9591" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position info="not_deleted" x="5395" y="0"/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="9683" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="task.c" index="0">
+<position info="not_deleted" x="10144" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position/>
+<item historyLabel="timer.c" index="4">
+<position info="not_deleted" x="2790" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="13024" y="0"/>
-</item>
-<item historyLabel="main.c" index="1">
+<item historyLabel="main.c" index="2">
 <position info="not_deleted" x="1252" y="0"/>
 </item>
-<item historyLabel="task.c" index="3">
-<position info="not_deleted" x="11813" y="0"/>
+<item historyLabel="task.h" index="5">
+<position info="not_deleted" x="1927" y="0"/>
 </item>
-<item historyLabel="timer.c" index="0">
-<position info="not_deleted" x="5037" y="0"/>
-</item>
-<item historyLabel="timer.c" index="0">
-<position info="not_deleted" x="5236" y="0"/>
-</item>
-<item historyLabel="timer.c" index="0">
-<position info="not_deleted" x="2582" y="11"/>
-</item>
-<item historyLabel="timer.c" index="0">
-<position info="not_deleted" x="2733" y="0"/>
-</item>
-<item active="true" historyLabel="timer.c" index="0">
-<position info="not_deleted" x="6032" y="12"/>
+<item active="true" historyLabel="main.c" index="2">
+<position info="not_deleted" x="1252" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>

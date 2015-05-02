@@ -77,6 +77,7 @@ inline void _Task_Del_FromRunningList();
 inline void _Task_Insert_InWaitingList();
 inline void _Task_Insert_ToRunningList(Task_s* pTask);
 
+inline unsigned char IsTaskList_OK(Task_s* pFirst);
 
 /**
  ******************************************************************************
@@ -424,24 +425,39 @@ _Task_Del_FromRunningList()
 inline void
 _Task_Insert_InWaitingList()
 {
+	Task_s* _pCurrentTask;
+
 	LISTLINEAR_HEAD_INIT(CurrentTaskRunning);
 
+	//------------ Si c'est la premiere tache a ajouter
 	if(!pFirstTaskWaiting)
 	{
 		pFirstTaskWaiting = CurrentTaskRunning;
+		return;
 	}
 
-	else
+	//------------ Sinon, s'il faut l'insérer dans la liste
+	// Check if the task is to be placed at the first position
+	if(pFirstTaskWaiting->ResartValue_ticks > CurrentTaskRunning->ResartValue_ticks)
 	{
-		Task_s* _pCurrentTask;
-
-		for(_pCurrentTask = pFirstTaskWaiting;
-				List_GetNext(Task_s, _pCurrentTask)->ResartValue_ticks <= CurrentTaskRunning->ResartValue_ticks
-			&&	_pCurrentTask != NULL;
-				_pCurrentTask = List_GetNext(Task_s, _pCurrentTask)		);
-
-		list_add(CurrentTaskRunning, _pCurrentTask);
+		list_add_tail(CurrentTaskRunning, pFirstTaskWaiting);
+		pFirstTaskWaiting = CurrentTaskRunning;
+		return;
 	}
+
+	// Otherwise we searsh for the right position in the list
+	for(_pCurrentTask = pFirstTaskWaiting;
+			List_GetNext(Task_s, _pCurrentTask)->ResartValue_ticks <= CurrentTaskRunning->ResartValue_ticks
+		&&	_pCurrentTask != NULL;
+			_pCurrentTask = List_GetNext(Task_s, _pCurrentTask)		);
+
+	list_add(CurrentTaskRunning, _pCurrentTask);
+
+	// Check for list integrity (only if activated)
+	#if TASK_CHECK_FOR_WAITINGLIST_INTEGRITY
+		if(!IsTaskList_OK(pFirstTaskWaiting))
+			asm("nop");
+	#endif /** TASK_CHECK_FOR_WAITINGLIST_INTEGRITY */
 }
 
 /**
@@ -535,6 +551,32 @@ Task_Exit()
 {
 	for(;;);
 }
+
+/**
+ ******************************************************************************
+ * Validation
+ *
+ */
+
+#if TASK_CHECK_FOR_WAITINGLIST_INTEGRITY
+
+	inline unsigned char
+	IsTaskList_OK(Task_s* pFirst)
+	{
+		while(List_GetNext(Task_s, pFirst) != NULL)
+		{
+			if(pFirst->ResartValue_ticks > List_GetNext(Task_s, pFirst)->ResartValue_ticks)
+			{
+				return 0;
+			}
+
+			pFirst = List_GetNext(Task_s, pFirst);
+		}
+
+		return 1;
+	}
+
+#endif /** TASK_CHECK_FOR_WAITINGLIST_INTEGRITY */
 
 /**
  ******************************************************************************
