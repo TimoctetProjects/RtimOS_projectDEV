@@ -73,9 +73,10 @@ static void Task_StackInit(	Task_s*	_Task,
 							Rui32 	StackSize,
 							Rui32 	_ptr_TaskFunction,
 							void*	_TaskArg );
-inline void _Task_Del_FromRunningList();
-inline void _Task_Insert_InWaitingList();
-inline void _Task_Insert_ToRunningList(Task_s* pTask);
+static inline void 	_task_Remove_FromRunningList();
+static inline void 	_task_Insert_InWaitingList();
+static inline void 	_task_Insert_ToRunningList(Task_s* pTask);
+static inline void 	_task_RemoveFromWaitingList();
 
 inline unsigned char IsTaskList_OK(Task_s* pFirst);
 
@@ -222,8 +223,8 @@ Task_Delay(Rui32 nbTicksToDelay)
 		CurrentTaskRunning->ResartValue_ticks = SystickCount + nbTicksToDelay;
 	#endif	/** RTIMOS_CHECK_FOR_CPU_USAGE */
 
-	_Task_Del_FromRunningList();
-	_Task_Insert_InWaitingList();
+	_task_Remove_FromRunningList();
+	_task_Insert_InWaitingList();
 
 	__asm volatile("svc 0x01 \n\r");
 }
@@ -253,7 +254,7 @@ Task_DelayUntil(	Rui32 PreviousValue_tick,
 Rui8
 Task_Suspend_fApp()
 {
-	_Task_Del_FromRunningList();
+	_task_Remove_FromRunningList();
 	__asm volatile("svc 0x01 \n\r");
 	return PASS;
 }
@@ -269,7 +270,7 @@ Task_Resume_fApp(Task_s* pTask)
 	if(!pTask)	// Check for state
 		return FAIL;
 
-	_Task_Insert_ToRunningList(pTask);
+	_task_Insert_ToRunningList(pTask);
 
 	return PASS;
 }
@@ -369,8 +370,8 @@ Task_GetNextTask()
   * @brief  Insert pTask in Running list
   * @param	pTask	Task's adress to add
   */
-inline void
-_Task_Insert_ToRunningList(Task_s* pTask)
+static inline void
+_task_Insert_ToRunningList(Task_s* pTask)
 {
 	LISTCIRCULAR_HEAD_INIT(pTask);
 
@@ -398,8 +399,8 @@ _Task_Insert_ToRunningList(Task_s* pTask)
 /**
   * @brief  Suppress Current List from Running list
   */
-inline void
-_Task_Del_FromRunningList()
+static inline void
+_task_Remove_FromRunningList()
 {
 	// Si une seule tache tourne
 	if(List_GetNext(Task_s, CurrentTaskRunning) == CurrentTaskRunning)
@@ -419,11 +420,29 @@ _Task_Del_FromRunningList()
 	}
 }
 
+static inline void
+_task_RemoveFromWaitingList()
+{
+	Task_s* _pCurrentTask = pFirstTaskWaiting;
+
+	// Gestion du pointeur FistTaskWaiting
+	// Si c'est le seul de la liste on le met à NULL
+	if(!List_GetNext(Task_s, pFirstTaskWaiting) && !List_GetPrev(Task_s, pFirstTaskWaiting))
+	{
+		pFirstTaskWaiting = NULL;
+		return;
+	}
+
+	// Sinon (s'il y a d'autres elements) on prend le suivant
+	pFirstTaskWaiting = List_GetNext(Task_s, pFirstTaskWaiting);
+	list_del(_pCurrentTask);
+}
+
 /**
   * @brief Insert Current task running in waiting list
   */
-inline void
-_Task_Insert_InWaitingList()
+static inline void
+_task_Insert_InWaitingList()
 {
 	Task_s* _pCurrentTask;
 
@@ -502,66 +521,16 @@ Task_CheckForWaitingTask()
 	{
 		Task_s* _pCurrentTask = pFirstTaskWaiting;
 
-		_pCurrentTask->ResartValue_ticks = 0;
+		// Restart value's RaZ
+		pFirstTaskWaiting->ResartValue_ticks = 0;
 
 		//-------------- Suppresion a la liste waiting
-		// Si c'est le seul de la liste
-		if(!List_GetNext(Task_s, _pCurrentTask) && !List_GetPrev(Task_s, _pCurrentTask))
-		{
-			pFirstTaskWaiting = NULL;
-		}
-
-		// Sinon (s'il y a d'autres elements)
-		else
-		{
-			if(_pCurrentTask == pFirstTaskWaiting)
-			{
-				pFirstTaskWaiting = List_GetNext(Task_s, _pCurrentTask);
-			}
-
-			list_del(_pCurrentTask);
-		}
+		_task_RemoveFromWaitingList();
 
 		//-------------- Ajout a la liste running
 		// Si c'est la tache IDLE qui tourne
-		_Task_Insert_ToRunningList(_pCurrentTask);
-		return;
+		_task_Insert_ToRunningList(_pCurrentTask);
 	}
-
-
-//	for(	_pCurrentTask = pFirstTaskWaiting;
-//			_pCurrentTask;
-//			_pCurrentTask = List_GetNext(Task_s, _pCurrentTask)	)
-//	{
-//		if(Task_IsWaitOver(_pCurrentTask))
-//		{
-//			_pCurrentTask->ResartValue_ticks = 0;
-//
-//			//-------------- Suppresion a la liste waiting
-//			// Si c'est le seul de la liste
-//			if(!List_GetNext(Task_s, _pCurrentTask) && !List_GetPrev(Task_s, _pCurrentTask))
-//			{
-//				pFirstTaskWaiting = NULL;
-//			}
-//
-//			// Sinon (s'il y a d'autres elements)
-//			else
-//			{
-//				if(_pCurrentTask == pFirstTaskWaiting)
-//				{
-//					pFirstTaskWaiting = List_GetNext(Task_s, _pCurrentTask);
-//				}
-//
-//				list_del(_pCurrentTask);
-//			}
-//
-//			//-------------- Ajout a la liste running
-//			// Si c'est la tache IDLE qui tourne
-//			_Task_Insert_ToRunningList(_pCurrentTask);
-//
-//			return;
-//		}
-//	}
 }
 
 /**
