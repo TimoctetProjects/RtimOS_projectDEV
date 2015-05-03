@@ -38,7 +38,8 @@
 typedef enum {
 	TaskReady = 0,
 	TaskRunning,
-	TaskWaiting
+	TaskWaiting,
+	TaskSuspended
 }TaskState_e;
 
 /** @brief Function pointer to a task's handler */

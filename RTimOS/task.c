@@ -225,8 +225,12 @@ Task_Delay(Rui32 nbTicksToDelay)
 		CurrentTaskRunning->ResartValue_ticks = SystickCount + nbTicksToDelay;
 	#endif	/** RTIMOS_CHECK_FOR_CPU_USAGE */
 
+	Port_Disable_irq();
 	_task_Remove_FromRunningList();
 	_task_Insert_InWaitingList();
+	Port_Enable_irq();
+
+	CurrentTaskRunning->State = TaskWaiting;
 
 	__asm volatile("svc 0x01 \n\r");
 }
@@ -257,6 +261,7 @@ Rui8
 Task_Suspend_fApp()
 {
 	_task_Remove_FromRunningList();
+	CurrentTaskRunning->State = TaskSuspended;
 	__asm volatile("svc 0x01 \n\r");
 	return PASS;
 }
@@ -269,11 +274,9 @@ Task_Suspend_fApp()
 Rui8
 Task_Resume_fApp(Task_s* pTask)
 {
-	if(!pTask)	// Check for state
+	if(!pTask || pTask->State != TaskSuspended)	// Check for state
 		return FAIL;
-
 	_task_Insert_ToRunningList(pTask);
-
 	return PASS;
 }
 
@@ -377,6 +380,8 @@ _task_Insert_ToRunningList(Task_s* pTask)
 {
 	LISTCIRCULAR_HEAD_INIT(pTask);
 
+	Port_Disable_irq();
+
 	// Handle IDLE Task
 	if(CurrentTaskRunning == &TaskIDLE)
 	{
@@ -396,6 +401,8 @@ _task_Insert_ToRunningList(Task_s* pTask)
 	}
 
 	else	list_add(pTask, CurrentTaskRunning);
+
+	Port_Enable_irq();
 }
 
 /**
@@ -404,6 +411,7 @@ _task_Insert_ToRunningList(Task_s* pTask)
 static inline void
 _task_Remove_FromRunningList()
 {
+	Port_Disable_irq();
 	// Si une seule tache tourne
 	if(List_GetNext(Task_s, CurrentTaskRunning) == CurrentTaskRunning)
 	{
@@ -420,6 +428,7 @@ _task_Remove_FromRunningList()
 		NextTaskToRun = List_GetNext(Task_s, CurrentTaskRunning);
 		list_del(CurrentTaskRunning);
 	}
+	Port_Enable_irq();
 }
 
 static inline void
@@ -427,6 +436,7 @@ _task_RemoveFromWaitingList()
 {
 	Task_s* _pCurrentTask = pFirstTaskWaiting;
 
+	Port_Disable_irq();
 	// Gestion du pointeur FistTaskWaiting
 	// Si c'est le seul de la liste on le met à NULL
 	if(!List_GetNext(Task_s, pFirstTaskWaiting) && !List_GetPrev(Task_s, pFirstTaskWaiting))
@@ -438,6 +448,7 @@ _task_RemoveFromWaitingList()
 	// Sinon (s'il y a d'autres elements) on prend le suivant
 	pFirstTaskWaiting = List_GetNext(Task_s, pFirstTaskWaiting);
 	list_del(_pCurrentTask);
+	Port_Enable_irq();
 }
 
 /**
@@ -448,6 +459,7 @@ _task_Insert_InWaitingList()
 {
 	Task_s* _pCurrentTask;
 
+	Port_Disable_irq();
 	LISTLINEAR_HEAD_INIT(CurrentTaskRunning);
 
 	//------------ Si c'est la premiere tache a ajouter
@@ -479,6 +491,7 @@ _task_Insert_InWaitingList()
 		if(!IsTaskList_OK(pFirstTaskWaiting))
 			asm("nop");
 	#endif /** TASK_CHECK_FOR_WAITINGLIST_INTEGRITY */
+	Port_Enable_irq();
 }
 
 /**
@@ -525,8 +538,6 @@ Task_CheckForWaitingTask()
 	{
 		if(_task_IsWaitOver(pFirstTaskWaiting))
 		{
-
-
 			Task_s* _pCurrentTask = pFirstTaskWaiting;
 
 			// Restart value's RaZ
