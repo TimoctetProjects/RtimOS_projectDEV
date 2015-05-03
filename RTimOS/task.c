@@ -523,13 +523,33 @@ _task_IsWaitOver(Task_s* task)
 	#endif /** RTIMOS_CHECK_FOR_CPU_USAGE */
 }
 
+
+typedef void* (*pF_AddToRunningList_t)(Task_s* pTask);
+
+static void* _task_add_toRunningList_FromISR_Others(Task_s* pTask)
+{
+	LISTCIRCULAR_HEAD_INIT(pTask);
+	list_add(pTask, NextTaskToRun);
+	return _task_add_toRunningList_FromISR_Others;
+}
+
+static void* _task_add_toRunningList_FromISR_First(Task_s* pTask)
+{
+	_task_Insert_ToRunningList(pTask);
+	return _task_add_toRunningList_FromISR_Others;
+}
+
+
+
 /**
   * @brief  Check if a task has finished waiting
   */
 static void
 Task_CheckForWaitingTask()
 {
-	Rui8 done = 0, firstdone = 0;
+	Rui8 done = 0;
+
+	pF_AddToRunningList_t pFunc_AddRunningListe = _task_add_toRunningList_FromISR_First;
 
 	if(!pFirstTaskWaiting)
 		return;
@@ -547,18 +567,7 @@ Task_CheckForWaitingTask()
 			_task_RemoveFromWaitingList();
 
 			//-------------- Ajout a la liste running
-			// Si c'est la tache IDLE qui tourne
-			if(!firstdone)
-			{
-				_task_Insert_ToRunningList(_pCurrentTask);
-				firstdone++;
-			}
-
-			else
-			{
-				LISTCIRCULAR_HEAD_INIT(&TaskIDLE);
-				list_add(_pCurrentTask, NextTaskToRun);
-			}
+			pFunc_AddRunningListe = pFunc_AddRunningListe(_pCurrentTask);
 		}
 
 		else done++;
