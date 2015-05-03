@@ -64,7 +64,7 @@ void SVC_Handler(void);
 void SVC_Handler_C(Rui32* svc_args);
 
 static void Task_GetNextTask();
-inline Rui8 Task_IsWaitOver(Task_s* task);
+
 static void Task_CheckForWaitingTask();
 static void CleanTOPofStack();
 static void IDLETask_Handler(void* pParam);
@@ -73,6 +73,8 @@ static void Task_StackInit(	Task_s*	_Task,
 							Rui32 	StackSize,
 							Rui32 	_ptr_TaskFunction,
 							void*	_TaskArg );
+
+static inline Rui8 	_task_IsWaitOver(Task_s* task);
 static inline void 	_task_Remove_FromRunningList();
 static inline void 	_task_Insert_InWaitingList();
 static inline void 	_task_Insert_ToRunningList(Task_s* pTask);
@@ -498,8 +500,8 @@ getSystickCount()
   * @brief  Return 1 if the task has finished waiting
   * @retval 0 (not finished) 1 (finished)
   */
-inline Rui8
-Task_IsWaitOver(Task_s* task)
+static inline Rui8
+_task_IsWaitOver(Task_s* task)
 {
 	#if RTIMOS_CHECK_FOR_CPU_USAGE
 		return (task->ResartValue_ticks <= (TickInIDLE + TickInTasks));
@@ -514,22 +516,41 @@ Task_IsWaitOver(Task_s* task)
 static void
 Task_CheckForWaitingTask()
 {
+	Rui8 done = 0, firstdone = 0;
+
 	if(!pFirstTaskWaiting)
 		return;
 
-	if(Task_IsWaitOver(pFirstTaskWaiting))
+	while(!done)
 	{
-		Task_s* _pCurrentTask = pFirstTaskWaiting;
+		if(_task_IsWaitOver(pFirstTaskWaiting))
+		{
 
-		// Restart value's RaZ
-		pFirstTaskWaiting->ResartValue_ticks = 0;
 
-		//-------------- Suppresion a la liste waiting
-		_task_RemoveFromWaitingList();
+			Task_s* _pCurrentTask = pFirstTaskWaiting;
 
-		//-------------- Ajout a la liste running
-		// Si c'est la tache IDLE qui tourne
-		_task_Insert_ToRunningList(_pCurrentTask);
+			// Restart value's RaZ
+			pFirstTaskWaiting->ResartValue_ticks = 0;
+
+			//-------------- Suppresion a la liste waiting
+			_task_RemoveFromWaitingList();
+
+			//-------------- Ajout a la liste running
+			// Si c'est la tache IDLE qui tourne
+			if(!firstdone)
+			{
+				_task_Insert_ToRunningList(_pCurrentTask);
+				firstdone++;
+			}
+
+			else
+			{
+				LISTCIRCULAR_HEAD_INIT(&TaskIDLE);
+				list_add(_pCurrentTask, NextTaskToRun);
+			}
+		}
+
+		else done++;
 	}
 }
 
